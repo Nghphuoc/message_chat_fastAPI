@@ -12,9 +12,14 @@ from model.User import Users
 from model.UserRoom import UserRoom
 from model.UserStatus import UserStatus
 
+from dbconfig import config
+print("Database URL:", config.DATABASE_URL)
+
 app = FastAPI()
 redis = RedisPubSub()
 
+
+# set controller
 app.include_router(user_router)
 
 # Lưu client theo phòng
