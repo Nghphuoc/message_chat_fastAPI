@@ -1,18 +1,21 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 import asyncio
+from controller.UserController import router as user_router
 from starlette.middleware.cors import CORSMiddleware
 from dbconfig.config import Base, engine
 from redis.redis_manager import RedisPubSub
-import model.User
-import model.Role
-import model.Friendship
-import model.ChatRoom
-import model.UserRoom
-import model.UserStatus
-import model.Messages
+from model.ChatRoom import ChatRoom
+from model.Friendship import Friendship
+from model.Messages import Message
+from model.Role import Role
+from model.User import Users
+from model.UserRoom import UserRoom
+from model.UserStatus import UserStatus
 
 app = FastAPI()
 redis = RedisPubSub()
+
+app.include_router(user_router)
 
 # Lưu client theo phòng
 connected_clients = {}  # { room_id: set of websockets }
@@ -29,7 +32,7 @@ app.add_middleware(
 async def on_startup():
     await redis.connect()
     print("Creating tables...")
-    Base.metadata.create_all(engine)
+    Base.metadata.create_all(bind=engine)
     print("Tables created.")
 
 

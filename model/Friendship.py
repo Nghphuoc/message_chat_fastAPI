@@ -3,7 +3,6 @@ import uuid
 import enum
 from sqlalchemy import String, Column, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
-
 from dbconfig.config import Base
 from sqlalchemy.types import Enum as SqlEnum
 
@@ -21,8 +20,8 @@ class Friendship(Base):
     status = Column(SqlEnum(TypeStatus), default=TypeStatus.PENDING, nullable=False)  # pending, accepted
     created_at = Column(DateTime, default = datetime.datetime.now())
 
-    friend_id = Column(String(36), ForeignKey('TB_USERS.user_id'), nullable=False)
-    user_id = Column(String(36), ForeignKey('TB_USERS.user_id'), nullable=False)
+    friend_id = Column(String(36), ForeignKey('TB_USERS.user_id'))
+    user_id = Column(String(36), ForeignKey('TB_USERS.user_id')) # , nullable=False
 
-    user = relationship("User", foreign_keys=[user_id], back_populates="sent_friend_requests")
-    friend = relationship("User", foreign_keys=[friend_id], back_populates="received_friend_requests")
+    user = relationship("Users", foreign_keys=[user_id], back_populates="sent_friend_requests")
+    friend = relationship("Users", foreign_keys=[friend_id], back_populates="received_friend_requests")

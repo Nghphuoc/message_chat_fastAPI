@@ -1,9 +1,9 @@
 import uuid
-from pydantic.schema import datetime
+from datetime import datetime  # ✅ Correct
 from sqlalchemy import Column, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from dbconfig.config import Base
-from model.Friendship import Friendship
+
 
 
 class Users(Base):
@@ -19,11 +19,14 @@ class Users(Base):
     created_at = Column(DateTime, default = datetime.utcnow, nullable=False)
 
     role = relationship('Role', back_populates="user") # name class name table
-    role_id = Column(String(36), ForeignKey("TB_ROLES.role_id"),nullable=False) # many to one
+    role_id = Column(String(36), ForeignKey("TB_ROLES.role_id")) # many to one
 
     status = relationship('UserStatus', back_populates="user", uselist=False) # one to one (uselist=False)
 
     message = relationship('Message', back_populates="user", uselist=False) # one to one
 
-    sent_friend_requests = relationship("Friendship", foreign_keys=[Friendship.user_id], back_populates="user") # many to many with friend
-    received_friend_requests = relationship("Friendship", foreign_keys=[Friendship.friend_id], back_populates="friend")
+    sent_friend_requests = relationship("Friendship", foreign_keys="Friendship.user_id", back_populates="user")
+    received_friend_requests = relationship("Friendship", foreign_keys="Friendship.friend_id", back_populates="friend")
+
+
+

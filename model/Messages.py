@@ -13,9 +13,9 @@ class Message(Base):
     file_url = Column(Text)
     created_at = Column(DateTime, default = datetime.datetime.now(), nullable = False)
 
-    room = relationship("ChatRoom", back_populates = "message")
-    room_id = Column(String(36), ForeignKey("TB_CHAT_ROOMS.chat_room_id"), nullable=False)
+    room = relationship("ChatRoom", back_populates="messages")  # đổi "message" → "messages"
+    room_id = Column(String(36), ForeignKey("TB_CHAT_ROOMS.chat_room_id"))
 
-    user = relationship("User", back_populates = "messages")
-    user_id = Column(String(36), ForeignKey("TB_USERS.user_id"), nullable=False)
+    user = relationship("Users", back_populates="message")
+    user_id = Column(String(36), ForeignKey("TB_USERS.user_id")) #
 

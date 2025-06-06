@@ -1,10 +1,8 @@
 import datetime
 import uuid
-
 from sqlalchemy import Boolean, ForeignKey
 from sqlalchemy import Column, String, DateTime
 from sqlalchemy.orm import relationship
-
 from dbconfig.config import Base
 
 
