@@ -1,3 +1,4 @@
+from model.Reaction import Reaction
 from model.ChatRoom import ChatRoom
 from model.Friendship import Friendship
 from model.Messages import Message

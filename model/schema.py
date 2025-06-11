@@ -1,9 +1,10 @@
 from datetime import datetime
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, constr, EmailStr
 
 from model.Friendship import TypeStatus
 from model.Role import RoleType
+from model.User import TypeFlag
 
 
 #Role
@@ -19,14 +20,17 @@ class RoleRequest(BaseModel):
 
 #User
 class UserRequest(BaseModel):
-    username: str
-    password: str
-    email: str
-    phone: str
-    img_url: str
-    display_name: str
+    username: constr(min_length=3, max_length=64)
+    password: constr(min_length=8, max_length=64)
+    email: EmailStr
+    phone: constr(regex=r"^\+?1?\d{9,12}$")
+    img_url: Optional[str] = None
+    display_name: Optional[constr(min_length=3, max_length=64)] = None
     created_at: datetime
     role_id: Optional[str] = None
+    flagDelete: Optional[TypeFlag] = None
+    class Config:
+        from_attributes = True
 
 class UserResponse(BaseModel):
     user_id: str
@@ -38,7 +42,7 @@ class UserResponse(BaseModel):
     display_name: str
     created_at: datetime
     role: Optional[RoleResponse]
-
+    flagDelete: Optional[TypeFlag]
     class Config:
         orm_mode = True
 

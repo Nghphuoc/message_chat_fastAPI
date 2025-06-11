@@ -19,3 +19,5 @@ class Message(Base):
     user = relationship("Users", back_populates="message")
     user_id = Column(String(36), ForeignKey("TB_USERS.user_id")) #
 
+    reactions = relationship("Reaction", back_populates="message")
+

@@ -4,6 +4,7 @@ from controller.UserController import router as user_router
 from starlette.middleware.cors import CORSMiddleware
 from dbconfig.config import Base, engine
 from redis.redis_manager import RedisPubSub
+from model.Reaction import Reaction
 from model.ChatRoom import ChatRoom
 from model.Friendship import Friendship
 from model.Messages import Message
@@ -11,6 +12,7 @@ from model.Role import Role
 from model.User import Users
 from model.UserRoom import UserRoom
 from model.UserStatus import UserStatus
+import model
 
 from dbconfig import config
 print("Database URL:", config.DATABASE_URL)
@@ -35,9 +37,9 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def on_startup():
+    Base.metadata.create_all(bind=engine)
     await redis.connect()
     print("Creating tables...")
-    Base.metadata.create_all(bind=engine)
     print("Tables created.")
 
 
