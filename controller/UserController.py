@@ -40,3 +40,14 @@ async def update_user_control(user_id: str, user: UserRequest ,service: UserServ
         return user_data
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": str(e)})
+
+
+@router.delete("/delete/{user_id}",status_code=status.HTTP_202_ACCEPTED)
+async def delete_user_control(user_id: str, service: UserService = Depends(user_service)):
+    try:
+        if service.delete_user_by_column(user_id):
+            return {"message": "Delete success"}
+        else:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": "Error deleting user"})
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": str(e)})

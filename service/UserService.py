@@ -80,6 +80,29 @@ class UserService:
            raise "Error UPDATE USER AT USER SERVICE: "+str(e)
 
 
+    #delete by set column
+    def delete_user_by_column(self, user_id: str) -> bool:
+        try:
+            print("DELETE USER AT USER SERVICE")
+            delete_user = self.db.get_user_by_id(user_id)
+            delete_user.flagDelete = True
+            return True
+        except Exception as e:
+            print("Error DELETE USER AT USER SERVICE: ", str(e))
+            raise "Error DELETE USER AT USER SERVICE: "+ str(e)
+
+
+    # delete from database (for ADMIN role)
+    def delete_user(self, user_id: str) -> UserResponse:
+        try:
+            print("DELETE USER AT USER SERVICE")
+            self.db.delete_user_by_id(user_id)
+            return UserResponse.from_orm(self.db.delete_user_by_id(user_id))
+        except Exception as e:
+            print("Error DELETE USER AT USER SERVICE: ", str(e))
+            raise "Error DELETE USER AT USER SERVICE: "+ str(e)
+
+
     def validate_user(self, user: UserRequest):
         self.check_duplicate_phone(user.phone)
         if self.db.get_user_by_email(user.email):

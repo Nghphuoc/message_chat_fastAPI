@@ -38,8 +38,20 @@ class UserRepository:
         except Exception as e:
             raise "Error Getting User by Email: " + str(e)
 
+
     def get_user_by_id(self, user_id: int):
         try:
             return self.db.query(Users).filter(Users.user_id == user_id).first()
         except Exception as e:
             raise "Error Getting User by ID: " + str(e)
+
+
+    def delete_user_by_id(self, user_id: str):
+        try:
+            self.db.query(Users).filter(Users.user_id == user_id).delete()
+            self.db.commit()
+            self.db.refresh(Users)
+            return True
+        except Exception as e:
+            self.db.rollback()
+            raise "Error Deleting User by ID: " + str(e)
