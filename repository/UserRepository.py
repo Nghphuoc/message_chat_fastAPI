@@ -37,3 +37,9 @@ class UserRepository:
             return self.db.query(Users).filter(Users.phone == phone).first()
         except Exception as e:
             raise "Error Getting User by Email: " + str(e)
+
+    def get_user_by_id(self, user_id: int):
+        try:
+            return self.db.query(Users).filter(Users.user_id == user_id).first()
+        except Exception as e:
+            raise "Error Getting User by ID: " + str(e)

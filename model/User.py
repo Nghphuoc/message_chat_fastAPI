@@ -25,7 +25,7 @@ class Users(Base):
     display_name = Column(String(255), nullable=False)
     created_at = Column(DateTime, default = datetime.utcnow, nullable=False)
     # delete is 0 active is 1 and other
-    flagDelete = Column(SqlEnum(TypeFlag), nullable=False)
+    flagDelete = Column(SqlEnum(TypeFlag), nullable=False, default=TypeFlag.NOT_ACTIVE)
 
     role = relationship('Role', back_populates="user") # name class name table
     role_id = Column(String(36), ForeignKey("TB_ROLES.role_id")) # many to one

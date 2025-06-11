@@ -28,7 +28,7 @@ class UserRequest(BaseModel):
     display_name: Optional[constr(min_length=3, max_length=64)] = None
     created_at: datetime
     role_id: Optional[str] = None
-    flagDelete: Optional[TypeFlag] = None
+    flagDelete: Optional[TypeFlag]
     class Config:
         from_attributes = True
 

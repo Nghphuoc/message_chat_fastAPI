@@ -16,4 +16,3 @@ class ChatRoom(Base):
     created_by = Column(String(36), nullable=False)
 
     messages = relationship("Message", back_populates="room")  # đổi tên thuộc tính thành "messages"
-

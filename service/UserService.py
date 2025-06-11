@@ -20,6 +20,16 @@ class UserService:
             raise e
 
 
+    def get_user_by_id(self, user_id: str) -> UserResponse:
+        try:
+            print("GET DETAIL FROM TABLE TB_USERS AT USER SERVICE")
+            self.db.get_user_by_id(user_id)
+            return UserResponse.from_orm(self.db.get_user_by_id(user_id))
+        except Exception as e:
+            print("ERROR GET DETAIL FROM TABLE TB_USERS AT USER SERVICE: " + str(e))
+
+
+
     def add_user(self, user: UserRequest) -> UserResponse:
         self.validate_user(user)
 
@@ -33,6 +43,7 @@ class UserService:
                 display_name=user.display_name,
                 created_at=user.created_at,
                 role_id=user.role_id,
+                flagDelete= user.flagDelete,
             )
             # find role by user.role_id
             print("CREATE USER AT USER SERVICE")
@@ -44,9 +55,9 @@ class UserService:
             raise e
 
 
-    def update_user(self ,email: str, user: UserRequest) -> UserResponse:
+    def update_user(self ,user_id: str, user: UserRequest) -> UserResponse:
        try:
-           old_user = self.db.get_user_by_email(email)
+           old_user = self.db.get_user_by_id(user_id)
            if old_user is None:
                raise "Error cannot found user"
 
@@ -56,11 +67,14 @@ class UserService:
            else:
                self.check_duplicate_phone(user.phone)
                old_user.phone = user.phone
+           # update if user.password not None
+           if user.password is not None:
+               old_user.password = user.password
 
            old_user.img_url = user.img_url
            old_user.display_name = user.display_name
            old_user.flagDelete = user.flagDelete
-           return self.db.update_user(old_user)
+           return self.db.create_user_(old_user)
        except Exception as e:
            print("Error UPDATE USER AT USER SERVICE: ", str(e))
            raise "Error UPDATE USER AT USER SERVICE: "+str(e)
