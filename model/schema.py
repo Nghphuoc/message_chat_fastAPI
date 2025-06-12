@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, constr, EmailStr
 
+from model import UserStatus
 from model.Friendship import TypeStatus
 from model.Role import RoleType
 from model.User import TypeFlag
@@ -47,6 +48,7 @@ class UserResponse(BaseModel):
     created_at: datetime
     role: Optional[RoleResponse]
     flagDelete: Optional[TypeFlag]
+    #status: UserStatusResponse
     class Config:
         orm_mode = True
 

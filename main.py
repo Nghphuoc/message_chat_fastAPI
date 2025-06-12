@@ -3,7 +3,9 @@ from controller.RoleController import router as role_router
 from controller.UserController import router as user_router
 from starlette.middleware.cors import CORSMiddleware
 from dbconfig.config import Base, engine
-from controller.WebSocket import redis
+from controller.WebSocket import redis  # chỉ import redis
+from controller.WebSocket import ws_router
+
 from model.Reaction import Reaction
 from model.ChatRoom import ChatRoom
 from model.Friendship import Friendship
@@ -28,6 +30,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(ws_router)
 app.include_router(user_router)
 app.include_router(role_router)
 
