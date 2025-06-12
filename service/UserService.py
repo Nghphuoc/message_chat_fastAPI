@@ -1,15 +1,19 @@
+from datetime import datetime
+
+from model import UserStatus
 from model.Role import RoleType
 from model.User import Users
 from model.schema import UserRequest, UserResponse
 from repository import UserRepository
-from service import RoleService
+from service import RoleService, StatusService
 
 
 class UserService:
 
-    def __init__(self, repo : UserRepository, role: RoleService):
+    def __init__(self, repo : UserRepository, role: RoleService, status: StatusService):
         self.db = repo
         self.role = role
+        self.status = status
 
 
     def get_user(self) -> list[UserResponse]:
@@ -33,40 +37,27 @@ class UserService:
             raise Exception("ERROR GET DETAIL FROM TABLE TB_USERS AT USER SERVICE: " + str(e))
 
 
-
-    def add_user(self, user: UserRequest) -> UserResponse:
-        role_applied = None
-        self.validate_user(user)
+    #delete by set column
+    def delete_user_by_column(self, user_id: str) -> bool:
         try:
-            #set role for user
-            if user.role_id is None:
-                role = self.role.get_role_by_name(RoleType.MODERATOR)
-                role_applied = role.role_id
-            else:
-                # role_applied = self.role.get_role_by_name(user.role_id)
-
-                # set default is id to role ( role_id )
-                role_applied = user.role_id
-
-            user_data = Users(
-                username=user.username,
-                password=user.password,
-                email=user.email,
-                phone=user.phone,
-                img_url=user.img_url,
-                display_name=user.display_name,
-                created_at=user.created_at,
-                role_id=role_applied,
-                flagDelete= user.flagDelete,
-            )
-            # find role by user.role_id
-            print("CREATE USER AT USER SERVICE")
-            created_user = self.db.create_user_(user_data)
-            # Convert SQLAlchemy model to UserResponse
-            return created_user
+            print("DELETE USER AT USER SERVICE")
+            delete_user = self.db.get_user_by_id(user_id)
+            delete_user.flagDelete = True
+            return True
         except Exception as e:
-            print("Error CREATE USER AT USER SERVICE: ", str(e))
-            raise Exception("Error CREATE USER AT USER SERVICE: " + str(e))
+            print("Error DELETE USER AT USER SERVICE: ", str(e))
+            raise Exception("Error DELETE USER AT USER SERVICE: "+ str(e))
+
+
+    # delete from database (for ADMIN role)
+    def delete_user(self, user_id: str) -> UserResponse:
+        try:
+            print("DELETE USER AT USER SERVICE")
+            self.db.delete_user_by_id(user_id)
+            return UserResponse.from_orm(self.db.delete_user_by_id(user_id))
+        except Exception as e:
+            print("Error DELETE USER AT USER SERVICE: ", str(e))
+            raise Exception("Error DELETE USER AT USER SERVICE: "+ str(e))
 
 
     def update_user(self ,user_id: str, user: UserRequest) -> UserResponse:
@@ -94,37 +85,76 @@ class UserService:
            raise Exception("Error UPDATE USER AT USER SERVICE: "+str(e))
 
 
-    #delete by set column
-    def delete_user_by_column(self, user_id: str) -> bool:
+    def add_user(self, user: UserRequest) -> UserResponse:
+        #step 4: validate param
+        self.validate_user(user)
         try:
-            print("DELETE USER AT USER SERVICE")
-            delete_user = self.db.get_user_by_id(user_id)
-            delete_user.flagDelete = True
-            return True
+            # step 1: Resolve role
+            role_id = self._resolve_user_role(user)
+            #step 2: Build user data
+            user_data = self._build_user_data(user, role_id)
+
+            print("CREATE USER AT USER SERVICE")
+            created_user = self.db.create_user_(user_data)
+            #step 3: create status
+            self._create_user_status(created_user.user_id)
+
+            return created_user
         except Exception as e:
-            print("Error DELETE USER AT USER SERVICE: ", str(e))
-            raise Exception("Error DELETE USER AT USER SERVICE: "+ str(e))
+            print("Error CREATE USER AT USER SERVICE: ", str(e))
+            raise Exception("Error CREATE USER AT USER SERVICE: " + str(e))
 
 
-    # delete from database (for ADMIN role)
-    def delete_user(self, user_id: str) -> UserResponse:
+    #step 1 Resolve role
+    def _resolve_user_role(self, user: UserRequest) -> str:
+        if user.role_id is None:
+            role = self.role.get_role_by_name(RoleType.MODERATOR)
+            return role.role_id
+        return user.role_id
+
+
+    #step 2 Build user data
+    def _build_user_data(self, user: UserRequest, role_id: str) -> Users:
+        return Users(
+            username=user.username,
+            password=user.password,
+            email=user.email,
+            phone=user.phone,
+            img_url=user.img_url,
+            display_name=user.display_name,
+            created_at=user.created_at,
+            role_id=role_id,
+            flagDelete=user.flagDelete,
+        )
+
+
+    #step 3 create status
+    def _create_user_status(self, user_id: str):
         try:
-            print("DELETE USER AT USER SERVICE")
-            self.db.delete_user_by_id(user_id)
-            return UserResponse.from_orm(self.db.delete_user_by_id(user_id))
+            status = UserStatus(
+                is_online=False,
+                last_seen=datetime.now(),
+                user_id=user_id,
+            )
+            self.status.insert_status(status)
         except Exception as e:
-            print("Error DELETE USER AT USER SERVICE: ", str(e))
-            raise Exception("Error DELETE USER AT USER SERVICE: "+ str(e))
+            print("ERROR CREATE USER STATUS: " + str(e))
+            raise Exception("ERROR CREATE USER STATUS: " + str(e))
 
 
+    # step 4: check all param user info
     def validate_user(self, user: UserRequest):
+        #step 5: check phone
         self.check_duplicate_phone(user.phone)
         if self.db.get_user_by_email(user.email):
             print("EMAIL ALREADY IN TABLE TB_USERS")
             raise Exception("EMAIL ALREADY IN TABLE TB_USERS")
 
 
+    # step 5: check param phone
     def check_duplicate_phone(self, phone: str):
         if self.db.get_user_by_phone(phone):
             print("Error PHONE ALREADY IN TABLE TB_USERS")
             raise Exception("Error PHONE ALREADY IN TABLE TB_USERS")
+
+
