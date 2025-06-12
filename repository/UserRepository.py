@@ -29,21 +29,21 @@ class UserRepository:
         try:
             return self.db.query(Users).filter(Users.email == email).first()
         except Exception as e:
-            raise "Error Getting User by Email: " + str(e)
+            raise Exception("Error Getting User by Email: " + str(e))
 
 
     def get_user_by_phone(self, phone: str):
         try:
             return self.db.query(Users).filter(Users.phone == phone).first()
         except Exception as e:
-            raise "Error Getting User by Email: " + str(e)
+            raise Exception("Error Getting User by Phone: " + str(e))
 
 
-    def get_user_by_id(self, user_id: int):
+    def get_user_by_id(self, user_id: str):
         try:
             return self.db.query(Users).filter(Users.user_id == user_id).first()
         except Exception as e:
-            raise "Error Getting User by ID: " + str(e)
+            raise Exception("Error Getting User by ID: " + str(e))
 
 
     def delete_user_by_id(self, user_id: str):
@@ -54,4 +54,4 @@ class UserRepository:
             return True
         except Exception as e:
             self.db.rollback()
-            raise "Error Deleting User by ID: " + str(e)
+            raise Exception("Error Deleting User by ID: " + str(e))

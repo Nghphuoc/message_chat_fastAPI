@@ -17,7 +17,7 @@ class UserService:
             return [UserResponse.from_orm(user) for user in users]
         except Exception as e:
             print("ERROR GET ALL FROM TABLE TB_USERS AT USER SERVICE: " + str(e))
-            raise e
+            raise Exception("ERROR GET ALL FROM TABLE TB_USERS AT USER SERVICE: " + str(e))
 
 
     def get_user_by_id(self, user_id: str) -> UserResponse:
@@ -27,6 +27,7 @@ class UserService:
             return UserResponse.from_orm(self.db.get_user_by_id(user_id))
         except Exception as e:
             print("ERROR GET DETAIL FROM TABLE TB_USERS AT USER SERVICE: " + str(e))
+            raise Exception("ERROR GET DETAIL FROM TABLE TB_USERS AT USER SERVICE: " + str(e))
 
 
 
@@ -52,7 +53,7 @@ class UserService:
             return created_user
         except Exception as e:
             print("Error CREATE USER AT USER SERVICE: ", str(e))
-            raise e
+            raise Exception("Error CREATE USER AT USER SERVICE: " + str(e))
 
 
     def update_user(self ,user_id: str, user: UserRequest) -> UserResponse:
@@ -77,7 +78,7 @@ class UserService:
            return self.db.create_user_(old_user)
        except Exception as e:
            print("Error UPDATE USER AT USER SERVICE: ", str(e))
-           raise "Error UPDATE USER AT USER SERVICE: "+str(e)
+           raise Exception("Error UPDATE USER AT USER SERVICE: "+str(e))
 
 
     #delete by set column
@@ -89,7 +90,7 @@ class UserService:
             return True
         except Exception as e:
             print("Error DELETE USER AT USER SERVICE: ", str(e))
-            raise "Error DELETE USER AT USER SERVICE: "+ str(e)
+            raise Exception("Error DELETE USER AT USER SERVICE: "+ str(e))
 
 
     # delete from database (for ADMIN role)
@@ -100,7 +101,7 @@ class UserService:
             return UserResponse.from_orm(self.db.delete_user_by_id(user_id))
         except Exception as e:
             print("Error DELETE USER AT USER SERVICE: ", str(e))
-            raise "Error DELETE USER AT USER SERVICE: "+ str(e)
+            raise Exception("Error DELETE USER AT USER SERVICE: "+ str(e))
 
 
     def validate_user(self, user: UserRequest):

@@ -24,13 +24,13 @@ async def get_detail_user_control(user_id: str,service: UserService = Depends(us
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": str(e)})
 
 
-@router.post("/create",status_code=status.HTTP_202_ACCEPTED, response_model= UserResponse)
+@router.post("/create",status_code=status.HTTP_201_CREATED, response_model= UserResponse)
 async def create_user_control(user: UserRequest ,service: UserService = Depends(user_service)):
     try:
         user_data = service.add_user(user)
         return user_data
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": str(e)})
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"message": str(e)})
 
 
 @router.put("/update/{user_id}",status_code=status.HTTP_202_ACCEPTED, response_model=UserResponse)
