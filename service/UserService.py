@@ -66,7 +66,7 @@ class UserService:
            if old_user is None:
                raise "Error cannot found user"
 
-           #check phone duplication
+           # step 5 check phone duplication
            if old_user.phone == user.phone:
                old_user.phone = user.phone
            else:

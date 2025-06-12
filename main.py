@@ -5,7 +5,7 @@ from starlette.middleware.cors import CORSMiddleware
 from dbconfig.config import Base, engine
 from controller.WebSocket import redis  # chỉ import redis
 from controller.WebSocket import ws_router
-
+from controller.RoomController import router as room_router
 from model.Reaction import Reaction
 from model.ChatRoom import ChatRoom
 from model.Friendship import Friendship
@@ -33,7 +33,7 @@ app.add_middleware(
 app.include_router(ws_router)
 app.include_router(user_router)
 app.include_router(role_router)
-
+app.include_router(room_router)
 
 @app.on_event("startup")
 async def on_startup():

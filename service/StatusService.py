@@ -30,3 +30,12 @@ class StatusService:
         except Exception as e:
             print("ERROR CANNOT INSERT STATUS AT STATUS SERVICE: " + str(e))
             raise HTTPException(status_code=400, detail=f"ERROR CANNOT INSERT STATUS AT STATUS SERVICE: " + str(e))
+
+
+    def get_status_by_user(self, user_id: str) -> UserStatusResponse:
+        try:
+            print("GET STATUS AT SATUS SERVICE")
+            return self.db.get_status_by_user_id(user_id)
+        except Exception as e:
+            print("ERROR CANNOT GET STATUS AT STATUS SERVICE: " + str(e))
+            raise HTTPException(status_code=404, detail=f"ERROR CANNOT GET STATUS AT STATUS SERVICE: " + str(e))

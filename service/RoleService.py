@@ -1,7 +1,6 @@
 from typing import List
 from fastapi import HTTPException
 from model import Role
-from model.Role import RoleType
 from model.schema import RoleRequest, RoleResponse
 from repository import RoleRepository
 

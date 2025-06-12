@@ -44,6 +44,17 @@ class StatusRepository:
             raise Exception("Error getting status" + str(e))
 
 
+    def get_status_by_user_id(self, user_id: str):
+        try:
+            self.db.query(UserStatus).filter(UserStatus.user_id == user_id).one()
+            self.db.commit()
+            self.db.refresh(UserStatus)
+        except Exception as e:
+            self.db.rollback()
+            print("Error getting status" + str(e))
+            raise Exception("Error getting status" + str(e))
+
+
     def update_user_status(self, user_id: str, is_online: bool):
         try:
             status = self.db.query(UserStatus).filter_by(user_id=user_id).first()
