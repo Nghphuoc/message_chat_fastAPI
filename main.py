@@ -1,5 +1,6 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 import asyncio
+from controller.RoleController import router as role_router
 from controller.UserController import router as user_router
 from starlette.middleware.cors import CORSMiddleware
 from dbconfig.config import Base, engine
@@ -23,6 +24,8 @@ redis = RedisPubSub()
 
 # set controller
 app.include_router(user_router)
+app.include_router(role_router)
+
 
 # Lưu client theo phòng
 connected_clients = {}  # { room_id: set of websockets }

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 from pydantic import BaseModel, constr, EmailStr
 
 from model.Friendship import TypeStatus
@@ -12,10 +12,12 @@ class RoleResponse(BaseModel):
     role_id: str
     role_name: RoleType
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 class RoleRequest(BaseModel):
     role_name: RoleType
+    class Config:
+        orm_mode = True
 
 
 #User
@@ -23,7 +25,7 @@ class UserRequest(BaseModel):
     username: constr(min_length=3, max_length=64)
     password: constr(min_length=8, max_length=64)
     email: EmailStr
-    phone: constr(regex=r"^\+?1?\d{9,12}$")
+    phone: constr(regex=r"^0\d{9}$")
     img_url: Optional[str] = None
     display_name: Optional[constr(min_length=3, max_length=64)] = None
     created_at: datetime
