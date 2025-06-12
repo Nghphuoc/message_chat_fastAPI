@@ -41,3 +41,17 @@ class RoleRepository:
         except Exception as e:
             self.db.rollback()
             raise Exception("Error Updating the Role: " + str(e))
+
+
+    def delete_role_by_role_id(self, role_id: str):
+        try:
+            role = self.db.query(Role).filter(Role.role_id == role_id).first()
+            if not role:
+                raise Exception(f"404: ROLE NOT FOUND: Role ID {role_id}")
+
+            self.db.delete(role)
+            self.db.commit()
+            return role_id
+        except Exception as e:
+            self.db.rollback()
+            raise Exception("Error Deleting The Role: " + str(e))

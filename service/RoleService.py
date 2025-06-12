@@ -24,7 +24,7 @@ class RoleService:
             raise HTTPException(status_code=500, detail="ERROR GET ALL ROLE AT SERVICE: " + str(e))
 
 
-    def get_role_by_name(self, name: RoleType) -> RoleResponse:
+    def get_role_by_role_name(self, name: str) -> RoleResponse:
         try:
             print("GET ROLE AT SERVICE")
             role = self.db.get_role_by_name(name)
@@ -45,3 +45,12 @@ class RoleService:
         except Exception as e:
             print("ERROR CREATE NEW ROLE AT SERVICE:", str(e))
             raise HTTPException(status_code=400, detail=f"ERROR CREATE NEW ROLE AT SERVICE: {(str(e))}")
+
+
+    def delete_role(self, role_id: str) -> RoleResponse:
+        try:
+            print("DELETE ROLE AT SERVICE: ", role_id)
+            return RoleResponse.from_orm(self.db.delete_role_by_role_id(role_id))
+        except Exception as e:
+            print("ERROR DELETE ROLE AT SERVICE:", str(e))
+            raise HTTPException(status_code=404, detail="ROLE NOT FOUND: " + str(e))

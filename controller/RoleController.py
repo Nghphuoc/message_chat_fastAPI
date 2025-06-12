@@ -19,7 +19,7 @@ async def get_role(service: RoleService = Depends(role_service)):
 @router.get("/{role_name}", response_model=RoleResponse, status_code=status.HTTP_200_OK)
 async def get_role_by_name(role_name: str ,service: RoleService = Depends(role_service)):
     try:
-        return service.get_role_by_name(role_name=role_name)
+        return service.get_role_by_role_name(role_name)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": str(e)})
 
@@ -30,3 +30,11 @@ async def create_role(role: RoleRequest, service: RoleService = Depends(role_ser
         return service.create_new_role(role)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"message": str(e)})
+
+
+@router.delete("/delete/{role_id}", response_model=RoleResponse, status_code=status.HTTP_200_OK)
+async def delete_role_by_id(role_id: str, service: RoleService = Depends(role_service)):
+    try:
+        return service.delete_role(role_id=role_id)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": str(e)})
