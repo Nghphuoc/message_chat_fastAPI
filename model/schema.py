@@ -11,11 +11,13 @@ from model.User import TypeFlag
 class RoleResponse(BaseModel):
     role_id: str
     role_name: RoleType
+    create_time: Optional[datetime]
     class Config:
         orm_mode = True
 
 class RoleRequest(BaseModel):
     role_name: RoleType
+    create_time: Optional[datetime]
     class Config:
         orm_mode = True
 

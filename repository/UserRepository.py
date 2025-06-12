@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from model.User import Users
+from sqlalchemy import desc
 
 
 class UserRepository:
@@ -20,7 +21,7 @@ class UserRepository:
 
     def get_all_users(self):
         try:
-            return self.db.query(Users).all()
+            return self.db.query(Users).order_by(desc(Users.created_at)).all()
         except Exception as e:
             raise e
 

@@ -1,12 +1,15 @@
+from model.Role import RoleType
 from model.User import Users
 from model.schema import UserRequest, UserResponse
 from repository import UserRepository
+from service import RoleService
 
 
 class UserService:
 
-    def __init__(self, repo : UserRepository):
+    def __init__(self, repo : UserRepository, role: RoleService):
         self.db = repo
+        self.role = role
 
 
     def get_user(self) -> list[UserResponse]:
@@ -32,9 +35,19 @@ class UserService:
 
 
     def add_user(self, user: UserRequest) -> UserResponse:
+        role_applied = None
         self.validate_user(user)
-
         try:
+            #set role for user
+            if user.role_id is None:
+                role = self.role.get_role_by_name(RoleType.MODERATOR)
+                role_applied = role.role_id
+            else:
+                # role_applied = self.role.get_role_by_name(user.role_id)
+
+                # set default is id to role ( role_id )
+                role_applied = user.role_id
+
             user_data = Users(
                 username=user.username,
                 password=user.password,
@@ -43,7 +56,7 @@ class UserService:
                 img_url=user.img_url,
                 display_name=user.display_name,
                 created_at=user.created_at,
-                role_id=user.role_id,
+                role_id=role_applied,
                 flagDelete= user.flagDelete,
             )
             # find role by user.role_id
