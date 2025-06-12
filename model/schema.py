@@ -14,13 +14,13 @@ class RoleResponse(BaseModel):
     role_name: RoleType
     create_time: Optional[datetime]
     class Config:
-        orm_mode = True
+        orm_mode = True  # Dành cho Pydantic v1
 
 class RoleRequest(BaseModel):
     role_name: RoleType
     create_time: Optional[datetime]
     class Config:
-        orm_mode = True
+        orm_mode = True  # Dành cho Pydantic v1
 
 
 #User
@@ -35,7 +35,7 @@ class UserRequest(BaseModel):
     role_id: Optional[str] = None
     flagDelete: Optional[TypeFlag]
     class Config:
-        from_attributes = True
+        orm_mode = True  # Dành cho Pydantic v1
 
 class UserResponse(BaseModel):
     user_id: str
@@ -50,7 +50,7 @@ class UserResponse(BaseModel):
     flagDelete: Optional[TypeFlag]
     #status: UserStatusResponse
     class Config:
-        orm_mode = True
+        orm_mode = True  # Dành cho Pydantic v1
 
 
 #UserStatus
@@ -64,7 +64,7 @@ class UserStatusResponse(BaseModel):
     last_seen: datetime
     user: UserResponse
     class Config:
-        from_attributes = True
+        orm_mode = True  # Dành cho Pydantic v1
 
 
 # ChatRoom
@@ -72,7 +72,9 @@ class ChatRoomRequest(BaseModel):
     name: str
     is_group: bool
     created_at: datetime
-    created_by: UserStatusRequest
+    created_by: str
+    class Config:
+        orm_mode = True  # Dành cho Pydantic v1
 
 
 class ChatRoomResponse(BaseModel):
@@ -80,10 +82,9 @@ class ChatRoomResponse(BaseModel):
     name: str
     is_group: bool
     created_at: datetime
-    created_by: UserStatusRequest
-
+    created_by: Optional[str]
     class Config:
-        from_attributes = True
+        orm_mode = True  # Dành cho Pydantic v1
 
 
 #Message
@@ -102,8 +103,7 @@ class MessageResponse(BaseModel):
     room: ChatRoomResponse
     user: UserStatusRequest
     class Config:
-        from_attributes = True
-
+        orm_mode = True  # Dành cho Pydantic v1
 
 #Friend
 class FriendRequest(BaseModel):
@@ -118,4 +118,4 @@ class FriendResponse(BaseModel):
     created_at: datetime
     friend: FriendRequest
     class Config:
-        from_attributes = True
+        orm_mode = True  # Dành cho Pydantic v1

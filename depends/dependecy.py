@@ -4,9 +4,11 @@ from sqlalchemy.orm import Session
 from dbconfig.config import get_db
 from model.schema import UserStatusResponse
 from repository.RoleRepository import RoleRepository
+from repository.RoomRepository import RoomRepository
 from repository.StatusRepository import StatusRepository
 from repository.UserRepository import UserRepository
 from service.RoleService import RoleService
+from service.RoomService import RoomService
 from service.StatusService import StatusService
 from service.UserService import UserService
 
@@ -23,6 +25,7 @@ def user_service(db: Session = Depends(get_db)):
 
     return UserService(repo, role, status)
 
+
 # role service
 def role_service(db: Session = Depends(get_db)):
     repo = RoleRepository(db)
@@ -32,3 +35,8 @@ def role_service(db: Session = Depends(get_db)):
 def user_status_service(db: Session = Depends(get_db)):
     repo = StatusRepository(db)
     return StatusService(repo)
+
+
+def room_service(db: Session = Depends(get_db)):
+    repo = RoomRepository(db)
+    return RoomService(repo)
