@@ -11,7 +11,9 @@ from service.UserService import UserService
 # user service
 def user_service(db: Session = Depends(get_db)):
     repo = UserRepository(db)
-    return UserService(repo)
+    role_repo = RoleRepository(db)
+    role = RoleService(role_repo)
+    return UserService(repo, role)
 
 # role service
 def role_service(db: Session = Depends(get_db)):

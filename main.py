@@ -1,10 +1,9 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-import asyncio
+from fastapi import FastAPI
 from controller.RoleController import router as role_router
 from controller.UserController import router as user_router
 from starlette.middleware.cors import CORSMiddleware
 from dbconfig.config import Base, engine
-from redis.redis_manager import RedisPubSub
+from controller.WebSocket import redis
 from model.Reaction import Reaction
 from model.ChatRoom import ChatRoom
 from model.Friendship import Friendship
@@ -18,17 +17,8 @@ import model
 from dbconfig import config
 print("Database URL:", config.DATABASE_URL)
 
+
 app = FastAPI()
-redis = RedisPubSub()
-
-
-# set controller
-app.include_router(user_router)
-app.include_router(role_router)
-
-
-# Lưu client theo phòng
-connected_clients = {}  # { room_id: set of websockets }
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,6 +28,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(user_router)
+app.include_router(role_router)
+
+
 @app.on_event("startup")
 async def on_startup():
     Base.metadata.create_all(bind=engine)
@@ -45,44 +39,3 @@ async def on_startup():
     print("Creating tables...")
     print("Tables created.")
 
-
-@app.websocket("/ws/{room_id}")
-async def websocket_endpoint(websocket: WebSocket, room_id: str):
-    await websocket.accept()
-
-    if room_id not in connected_clients:
-        connected_clients[room_id] = set()
-    connected_clients[room_id].add(websocket)
-
-    pubsub = await redis.subscribe(room_id)
-
-    async def receive_ws():
-        try:
-            while True:
-                data = await websocket.receive_text()
-                await redis.publish(room_id, data)
-        except WebSocketDisconnect:
-            pass
-        finally:
-            # Xóa client khi disconnect
-            connected_clients[room_id].discard(websocket)
-            if not connected_clients[room_id]:
-                # Nếu phòng không còn ai, hủy subscribe hoặc xóa key
-                connected_clients.pop(room_id, None)
-
-    async def send_ws():
-        try:
-            while True:
-                message = await pubsub.get_message(ignore_subscribe_messages=True, timeout=1)
-                if message:
-                    # Gửi message cho client trong đúng phòng
-                    for client in connected_clients.get(room_id, []):
-                        if client.client_state.value == 1:  # CONNECTED
-                            await client.send_text(message['data'])
-        except WebSocketDisconnect:
-            # Nếu send_ws bị disconnect, cũng xóa client
-            connected_clients[room_id].discard(websocket)
-            if not connected_clients[room_id]:
-                connected_clients.pop(room_id, None)
-
-    await asyncio.gather(receive_ws(), send_ws())

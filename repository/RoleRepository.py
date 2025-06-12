@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-
+from sqlalchemy import desc
 from model import Role
 from model.Role import RoleType
 
@@ -11,7 +11,7 @@ class RoleRepository:
 
 
     def get_all_roles(self):
-        return self.db.query(Role).all()
+        return self.db.query(Role).order_by(desc(Role.create_time)).all()
 
 
     def create_role(self, role: Role):

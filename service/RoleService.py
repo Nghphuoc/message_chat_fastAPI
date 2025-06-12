@@ -44,4 +44,4 @@ class RoleService:
             return RoleResponse.from_orm(created_role)
         except Exception as e:
             print("ERROR CREATE NEW ROLE AT SERVICE:", str(e))
-            raise HTTPException(status_code=400, detail=f"ERROR CREATE NEW ROLE AT SERVICE: {(e)}")
+            raise HTTPException(status_code=400, detail=f"ERROR CREATE NEW ROLE AT SERVICE: {(str(e))}")
