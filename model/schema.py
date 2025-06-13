@@ -71,7 +71,7 @@ class UserStatusResponse(BaseModel):
 class ChatRoomRequest(BaseModel):
     name: Optional[str]
     is_group: bool
-    created_at: datetime
+    created_at: Optional[datetime]
     created_by: str
     class Config:
         orm_mode = True  # Dành cho Pydantic v1
@@ -108,7 +108,7 @@ class MessageResponse(BaseModel):
 #Friend
 class FriendRequest(BaseModel):
     status: TypeStatus
-    created_at: datetime
+    created_at: Optional[datetime]
     friend_id: str # id user connect
     user_id: str
 
@@ -116,7 +116,8 @@ class FriendResponse(BaseModel):
     friend_id: str
     status: TypeStatus
     created_at: datetime
-    friend: FriendRequest
+    friend_id: str  # id user connect
+    user_id: str
     class Config:
         orm_mode = True  # Dành cho Pydantic v1
 
@@ -132,8 +133,8 @@ class UserRoomRequest(BaseModel):
 
 class UserRoomResponse(BaseModel):
     user_room_id: str
-    user_id: UserResponse
-    room_id: ChatRoomResponse
+    user_id: str
+    room_id: str
     joined_at: Optional[datetime]
 
     class Config:
