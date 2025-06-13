@@ -7,9 +7,11 @@ from repository.RoleRepository import RoleRepository
 from repository.RoomRepository import RoomRepository
 from repository.StatusRepository import StatusRepository
 from repository.UserRepository import UserRepository
+from repository.UserRoomRepository import UserRoomRepository
 from service.RoleService import RoleService
 from service.RoomService import RoomService
 from service.StatusService import StatusService
+from service.UserRoomService import UserRoomService
 from service.UserService import UserService
 
 
@@ -40,3 +42,8 @@ def user_status_service(db: Session = Depends(get_db)):
 def room_service(db: Session = Depends(get_db)):
     repo = RoomRepository(db)
     return RoomService(repo)
+
+
+def user_room_service(db: Session = Depends(get_db)):
+    repo = UserRoomRepository(db)
+    return UserRoomService(repo)
