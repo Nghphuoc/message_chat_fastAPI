@@ -211,3 +211,13 @@ Tránh mất dữ liệu và giúp khôi phục dễ dàng.
 
 ✅ 10. Rời khỏi phòng chat
 Xóa bản ghi trong tb_user_room tương ứng với user_id và room_id
+
+
+## user_room
+
+| Trường         | Ý nghĩa                             | Cần điền gì                          |
+| -------------- | ----------------------------------- | ------------------------------------ |
+| `user_room_id` | ID duy nhất của quan hệ user - room | UUID hoặc auto-gen                   |
+| `user_id`      | ID của từng người dùng              | Ghi **2 dòng**, 1 dòng cho mỗi người |
+| `room_id`      | ID của phòng vừa tạo                | Trùng nhau cho cả 2 người            |
+| `joined_at`    | Thời điểm người đó tham gia         | `NOW()` hoặc thời điểm accept        |
