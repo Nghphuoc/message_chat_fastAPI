@@ -3,12 +3,14 @@ from sqlalchemy.orm import Session
 
 from dbconfig.config import get_db
 from repository.FriendRepository import FriendRepository
+from repository.MessageRepository import MessageRepository
 from repository.RoleRepository import RoleRepository
 from repository.RoomRepository import RoomRepository
 from repository.StatusRepository import StatusRepository
 from repository.UserRepository import UserRepository
 from repository.UserRoomRepository import UserRoomRepository
 from service.FriendService import FriendService
+from service.MessageService import MessageService
 from service.RoleService import RoleService
 from service.RoomService import RoomService
 from service.StatusService import StatusService
@@ -65,3 +67,8 @@ def user_and_friend_service(db: Session = Depends(get_db)):
     friend_service = FriendService(friend)
 
     return UserAndFriendCreateService(chat_room_service, user_room_service, friend_service)
+
+
+def message_service(db: Session = Depends(get_db)):
+    repo = MessageRepository(db)
+    return MessageService(repo)

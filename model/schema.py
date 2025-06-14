@@ -90,18 +90,18 @@ class ChatRoomResponse(BaseModel):
 #Message
 class MessageRequest(BaseModel):
     content: str
-    file_url: str
-    created_at: datetime
+    file_url: Optional[str]
+    created_at: Optional[datetime]
     room: str
     user: str
 
 class MessageResponse(BaseModel):
     message_id: str
     content: str
-    file_url: str
-    created_at: datetime
+    file_url: Optional[str]
+    created_at: Optional[datetime]
     room: ChatRoomResponse
-    user: UserStatusRequest
+    user: UserResponse
     class Config:
         orm_mode = True  # Dành cho Pydantic v1
 
