@@ -44,6 +44,7 @@ app.include_router(friend_router)
 app.include_router(message_router)
 
 
+# start db
 @app.on_event("startup")
 async def on_startup():
     Base.metadata.create_all(bind=engine)
