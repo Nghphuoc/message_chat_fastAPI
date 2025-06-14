@@ -1,5 +1,7 @@
 import aioredis
 
+from model.schema import MessageRequest
+
 REDIS_URL = "redis://localhost:6379"
 
 class RedisPubSub:
@@ -19,5 +21,6 @@ class RedisPubSub:
         return pubsub
 
 
+    # use for message service add to database
     async def publish(self, channel: str, message: str):
         await self.redis.publish(channel, message)

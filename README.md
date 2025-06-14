@@ -1,55 +1,3 @@
-✅ 1. Đăng ký / Đăng nhập
-Người dùng tạo tài khoản → thêm bản ghi vào tb_users với các thông tin như username, password, email, phone, role_id,...
-
-Đăng nhập thành công → cập nhật trạng thái trong tb_user_status (is_online = 1, last_seen = NOW()).
-
-✅ 2. Tạo phòng chat
-Người dùng tạo phòng → thêm bản ghi vào tb_chat_rooms (có thể là nhóm is_group = 1 hoặc cá nhân is_group = 0).
-
-Hệ thống thêm người dùng vào phòng thông qua bảng tb_user_room (user_id, room_id, joined_at).
-
-✅ 3. Mời hoặc thêm người vào phòng chat
-Thêm người dùng vào tb_user_room với room_id tương ứng.
-
-✅ 4. Gửi tin nhắn
-Người dùng gửi tin nhắn → thêm bản ghi vào tb_messages:
-
-user_id: người gửi
-
-room_id: phòng chat
-
-content, file_url, created_at, message_id...
-
-✅ 5. Phản ứng với tin nhắn (Reaction)
-Người dùng phản ứng với tin nhắn → thêm vào tb_reaction:
-
-user_id, message_id, emoji, created_at
-
-✅ 6. Xem trạng thái người dùng (online / offline)
-Trạng thái lưu ở tb_user_status:
-
-is_online, last_seen, user_id
-
-✅ 7. Kết bạn
-Người dùng gửi lời mời kết bạn → thêm vào tb_friendships:
-
-user_id, friend_id, status = 'pending'
-
-Người nhận chấp nhận → cập nhật status = 'accepted'
-
-Có thể chặn (blocked) hoặc hủy kết bạn.
-
-✅ 8. Phân quyền người dùng
-Vai trò của người dùng lưu trong tb_roles (admin, moderator,...) thông qua role_id trong tb_users.
-
-✅ 9. Rời khỏi phòng chat
-Người dùng rời phòng → xóa bản ghi tương ứng trong tb_user_room.
-
-✅ 10. Xóa hoặc vô hiệu hóa tài khoản
-Cập nhật flagDelete trong tb_users:
-
-'not_active', 'active', 'delete'
-
 
 | Bảng             | Mô tả chức năng               |
 | ---------------- | ----------------------------- |
@@ -213,11 +161,62 @@ Tránh mất dữ liệu và giúp khôi phục dễ dàng.
 Xóa bản ghi trong tb_user_room tương ứng với user_id và room_id
 
 
-## user_room
+## WEB SOCKET
 
-| Trường         | Ý nghĩa                             | Cần điền gì                          |
-| -------------- | ----------------------------------- | ------------------------------------ |
-| `user_room_id` | ID duy nhất của quan hệ user - room | UUID hoặc auto-gen                   |
-| `user_id`      | ID của từng người dùng              | Ghi **2 dòng**, 1 dòng cho mỗi người |
-| `room_id`      | ID của phòng vừa tạo                | Trùng nhau cho cả 2 người            |
-| `joined_at`    | Thời điểm người đó tham gia         | `NOW()` hoặc thời điểm accept        |
+🔁 1. Pub/Sub (Publish/Subscribe) – Giao tiếp giữa các client
+👉 Mục đích:
+Giúp các client nhận tin nhắn theo thời gian thực mà không cần polling (hỏi liên tục).
+
+🔧 Cách hoạt động:
+Khi người dùng gửi tin nhắn, ứng dụng publish tin đó lên một channel Redis tương ứng với room_id.
+
+Tất cả các WebSocket client đang subscribe vào channel đó sẽ nhận được tin nhắn ngay lập tức.
+
+💬 Ví dụ:
+python
+Copy
+Edit
+await redis.publish("room_123", "hello world")
+Tất cả client đang subscribe vào "room_123" sẽ nhận "hello world" tức thì.
+
+📦 2. Lưu trữ trạng thái tạm thời (optional)
+🔒 Dùng cho:
+Trạng thái online/offline của người dùng
+
+Danh sách phòng đang hoạt động
+
+Tạm lưu message (nếu không dùng database)
+
+Ví dụ:
+python
+Copy
+Edit
+redis.set("user:123:online", True, ex=300)  # hết hạn sau 5 phút
+🧠 3. Message Queue (nâng cao)
+Redis có thể kết hợp với Redis Streams hoặc Redis Lists để:
+
+Lưu tin nhắn chưa được đọc
+
+Làm hệ thống phân phối tin nhắn có độ bền tạm thời
+
+⚡ Tổng Quan Vai Trò Redis Trong Chat App
+Vai trò	Redis tính năng	Ghi chú
+Giao tiếp real-time	Pub/Sub	Gửi tin nhắn đến nhiều client
+Lưu trạng thái tạm thời	Key-Value store	Trạng thái online/offline
+Hàng đợi tin nhắn (optional)	Lists/Streams	Tin nhắn chưa xử lý
+Session cache (optional)	Key-Value store	Cho auth/token/session
+
+📌 So sánh:
+Cách	Ưu điểm	Nhược điểm
+Redis Pub/Sub	Siêu nhanh, đơn giản	Không lưu lại message cũ
+Redis Stream	Lưu tin nhắn, hỗ trợ nhiều consumer	Cấu hình phức tạp hơn
+WebSocket không Redis	Dễ cho app nhỏ	Không scale được giữa servers
+
+🌐 Khi nào dùng Redis trong WebSocket app?
+Khi bạn cần nhiều client / nhiều instance server giao tiếp với nhau (scale out).
+
+Khi cần phản hồi real-time, không delay.
+
+Khi muốn tách logic gửi/nhận tin nhắn khỏi WebSocket.
+
+
