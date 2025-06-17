@@ -10,6 +10,7 @@ from controller.UserRoomController import router as user_room_router
 from controller.UserAndFriendCreateController import router as user_friend_create_router
 from controller.FriendController import router as friend_router
 from controller.MessageController import router as message_router
+from controller.UserRoomAndFindRoom import router as user_room_and_find_room
 from model.Reaction import Reaction
 from model.ChatRoom import ChatRoom
 from model.Friendship import Friendship
@@ -43,6 +44,7 @@ app.include_router(user_friend_create_router)
 app.include_router(friend_router)
 app.include_router(message_router)
 
+app.include_router(user_room_and_find_room)
 
 # start db
 @app.on_event("startup")
