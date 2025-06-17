@@ -70,5 +70,6 @@ def user_and_friend_service(db: Session = Depends(get_db)):
 
 
 def message_service(db: Session = Depends(get_db)):
+
     repo = MessageRepository(db)
     return MessageService(repo)

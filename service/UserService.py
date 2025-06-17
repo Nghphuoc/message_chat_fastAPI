@@ -30,14 +30,14 @@ class UserService:
     def get_user_by_id(self, user_id: str) -> UserResponse:
         try:
             print("GET DETAIL FROM TABLE TB_USERS AT USER SERVICE")
-            self.db.get_user_by_id(user_id)
-            return UserResponse.from_orm(self.db.get_user_by_id(user_id))
+            user_data = self.db.get_user_by_id(user_id)
+            return UserResponse.from_orm(user_data)
         except Exception as e:
             print("ERROR GET DETAIL FROM TABLE TB_USERS AT USER SERVICE: " + str(e))
             raise Exception("ERROR GET DETAIL FROM TABLE TB_USERS AT USER SERVICE: " + str(e))
 
 
-    #delete by set column
+    # delete by set column
     def delete_user_by_column(self, user_id: str) -> bool:
         try:
             print("DELETE USER AT USER SERVICE")
@@ -107,10 +107,11 @@ class UserService:
 
     #step 1 Resolve role
     def _resolve_user_role(self, user: UserRequest) -> str:
-        if user.role_id is None:
-            role = self.role.get_role_by_name(RoleType.MODERATOR)
+        if not user.role_id:
+            role = self.role.get_role_by_role_name(RoleType.MODERATOR)
             return role.role_id
-        return user.role_id
+        else:
+            return user.role_id
 
 
     #step 2 Build user data

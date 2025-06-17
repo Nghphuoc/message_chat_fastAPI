@@ -1,7 +1,5 @@
-
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
-
 from depends.dependecy import user_and_friend_service
 from model.Friendship import TypeStatus
 from service.UserAndFriendCreateService import UserAndFriendCreateService

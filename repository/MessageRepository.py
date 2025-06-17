@@ -1,3 +1,4 @@
+from sqlalchemy import desc, asc
 from sqlalchemy.orm import Session
 
 from model import Message
@@ -27,4 +28,17 @@ class MessageRepository:
             return messages
         except Exception as e:
             self.db.rollback()
+            raise Exception("ERROR GET MESSAGE", str(e))
+
+
+    def get_message_from_room_id(self, room_id: str):
+        try:
+            messages = (
+                self.db.query(Message)
+                .filter(Message.room_id == room_id)
+                .order_by(asc(Message.created_at))
+                .all()
+            )
+            return messages
+        except Exception as e:
             raise Exception("ERROR GET MESSAGE", str(e))

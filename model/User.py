@@ -21,7 +21,7 @@ class Users(Base):
     password = Column(String(255), nullable=False)
     email = Column(String(255), nullable=False, unique=True)
     phone = Column(String(255), nullable=False, unique=True)
-    img_url = Column(String(255), nullable=False)
+    img_url = Column(String(2048), nullable=False)
     display_name = Column(String(255), nullable=False)
     created_at = Column(DateTime, default = datetime.utcnow, nullable=False)
     # delete is 0 active is 1 and other

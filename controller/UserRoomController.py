@@ -17,10 +17,10 @@ async def get_all_user_rooms(service: UserRoomService = Depends(user_room_servic
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": str(e)})
 
 
-@router.get("/detail/{room_id}", response_model=UserRoomResponse, status_code=status.HTTP_200_OK)
-async def get_user_room(room_id: str, service: UserRoomService = Depends(user_room_service)):
+@router.get("/detail/{user_id}", response_model=list[UserRoomResponse], status_code=status.HTTP_200_OK)
+async def get_user_room(user_id: str, service: UserRoomService = Depends(user_room_service)):
     try:
-        return service.get_user_room_by_id(room_id)
+        return service.get_user_room_by_id(user_id)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": str(e)})
 

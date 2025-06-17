@@ -59,6 +59,7 @@ class StatusRepository:
         try:
             status = self.db.query(UserStatus).filter_by(user_id=user_id).first()
 
+            # step 1 create if don't have status
             if not status:
                 status = UserStatus(
                     user_id=user_id,
@@ -67,6 +68,7 @@ class StatusRepository:
                 )
                 self.db.add(status)
             else:
+                # step 2 open status online
                 status.is_online = is_online
                 status.last_seen = datetime.utcnow()
 

@@ -127,15 +127,13 @@ class UserRoomRequest(BaseModel):
     user_id: str
     room_id: str
     joined_at: Optional[datetime]
-
     class Config:
         orm_mode = True
 
 class UserRoomResponse(BaseModel):
-    user_room_id: str
-    user_id: str
-    room_id: str
+    user_room_id: Optional[str]
+    user_id: Optional[str]
+    room_id: Optional[str]
     joined_at: Optional[datetime]
-
     class Config:
         orm_mode = True

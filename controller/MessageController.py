@@ -26,4 +26,10 @@ async def get_all_messages(service: MessageService = Depends(message_service)):
         raise HTTPException(status_code=500, detail={"message": str(e)})
 
 
+@router.get("/from_room/{room_id}", response_model=list[dict], status_code=status.HTTP_200_OK)
+async def get_message(room_id: str, service: MessageService = Depends(message_service)):
+    try:
+        return service.get_all_message_from_room(room_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail={"message": str(e)})
 
