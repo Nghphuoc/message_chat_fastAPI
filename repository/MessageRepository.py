@@ -1,4 +1,4 @@
-from sqlalchemy import desc
+from sqlalchemy import desc, asc
 from sqlalchemy.orm import Session
 
 from model import Message
@@ -36,7 +36,7 @@ class MessageRepository:
             messages = (
                 self.db.query(Message)
                 .filter(Message.room_id == room_id)
-                .order_by(desc(Message.created_at))
+                .order_by(asc(Message.created_at))
                 .all()
             )
             return messages
