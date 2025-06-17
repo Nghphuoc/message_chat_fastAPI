@@ -30,9 +30,20 @@ class MessageService:
 
     def get_message(self) -> list[MessageResponse]:
         try:
-            print("CREATE MESSAGE AT MessageService")
+            print("GET MESSAGE AT MessageService")
             data_message = self.db.get_message_all()
             return [MessageResponse.from_orm(list) for list in data_message]
         except Exception as e:
             print("ERROR CREATE MESSAGE AT MessageService: " + str(e))
             raise HTTPException(status_code=500, detail="ERROR CREATE MESSAGE AT MessageService: " + str(e))
+
+
+    # get all message from room_id
+    def get_all_message_from_room(self, room_id: str) -> list[MessageResponse]:
+        try:
+            print("GET ALL MESSAGE FROM ROOM AT MessageService")
+            data_message = self.db.get_message_from_room_id(room_id)
+            return [MessageResponse.from_orm(list) for list in data_message]
+        except Exception as e:
+            print("ERROR GET ALL MESSAGE FROM ROOM AT MessageService: " + str(e))
+            raise HTTPException(status_code=500, detail="ERROR ALL MESSAGE FROM ROOM AT MessageService: " + str(e))
