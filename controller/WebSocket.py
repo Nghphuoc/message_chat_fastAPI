@@ -9,6 +9,7 @@ from depends.dependecy import user_status_service, message_service, user_service
 from service import StatusService, MessageService
 import logging
 
+
 from service.UserService import UserService
 
 logger = logging.getLogger(__name__)
@@ -82,7 +83,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, user_id: str,
                                                         "img_url": data_user.img_url,
                                                         "room_id": room_id,
                                                         "content": data,
-                                                        "created_at": str(data_send.created_at)}))
+                                                        "created_at": str(MessageService.to_vietnam_time(data_send.created_at))}))
         except WebSocketDisconnect:
             service.update_status(user_id, False)  # 👉 OFFLINE
             pass
