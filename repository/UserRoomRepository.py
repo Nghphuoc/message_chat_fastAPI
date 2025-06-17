@@ -30,6 +30,15 @@ class UserRoomRepository:
             raise Exception("Error while getting all user rooms: " + str(e))
 
 
+    # get all room of user
+    def get_all_room_for_user(self, user_id: str) -> list[str]:
+        try:
+            return self.db.query(UserRoom.room_id).filter(UserRoom.user_id == user_id).all()
+        except Exception as e:
+            self.db.rollback()
+            raise Exception("Error while getting all rooms for user: " + str(e))
+
+
     # get list chatroom id
     def get_room_id_by_user(self, user_id: str):
         try:

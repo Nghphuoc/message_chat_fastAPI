@@ -34,19 +34,30 @@ class UserRoomService:
         try:
             print("GET USER ROOM LIST SERVICE")
             user_room_list = self.db.get_all_user_rooms()
-            return [UserRoomResponse.from_orm(list) for list in user_room_list]
+            return [UserRoomResponse.from_orm(item) for item in user_room_list]
         except Exception as e:
             print("ERROR GET USER ROOM LIST SERVICE: ", str(e))
             raise HTTPException(status_code=404, detail="USER_ROOM SERVICE NOT FOUND: " + str(e))
 
 
-    def get_user_room_by_id(self, room_id: int) -> UserRoomResponse:
+    def get_user_room_by_id(self, user_id: str) -> list[UserRoomResponse]:
         try:
             print("GET USER ROOM BY ID SERVICE")
-            user_room_data = self.db.get_room_id_by_user(room_id)
-            return UserRoomResponse.from_orm(user_room_data)
+            user_room_data = self.db.get_room_id_by_user(user_id)
+            return [UserRoomResponse.from_orm(item) for item in user_room_data]
         except Exception as e:
             print("ERROR GET USER ROOM BY ID SERVICE: ", str(e))
+            raise HTTPException(status_code=404, detail="USER_ROOM SERVICE NOT FOUND: " + str(e))
+
+
+    # get all room of user
+    def get_all_list_room_for_user(self, user_id: str) -> list[str]:
+        try:
+            print("GET USER ROOM LIST SERVICE")
+            user_room_list = self.db.get_all_room_for_user(user_id)
+            return user_room_list
+        except Exception as e:
+            print("ERROR GET USER ROOM LIST SERVICE: ", str(e))
             raise HTTPException(status_code=404, detail="USER_ROOM SERVICE NOT FOUND: " + str(e))
 
 
