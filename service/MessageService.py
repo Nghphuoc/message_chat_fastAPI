@@ -1,5 +1,7 @@
-from fastapi import HTTPException
+import datetime
 
+from fastapi import HTTPException
+import pytz
 from model import Message
 from model.schema import MessageRequest, MessageResponse
 from repository import MessageRepository
@@ -51,7 +53,7 @@ class MessageService:
                 name_user = message_data.user.username
                 img_url = message_data.user.img_url  # or message_data.user.img_url depending on your model
                 content = message_data.content
-                created_at = str(message_data.created_at)
+                created_at = str(to_vietnam_time(message_data.created_at))
 
                 message_dict = {
                     "message_id": message_data.message_id,
@@ -69,3 +71,10 @@ class MessageService:
         except Exception as e:
             print("ERROR GET ALL MESSAGE FROM ROOM AT MessageService: " + str(e))
             raise HTTPException(status_code=500, detail="ERROR ALL MESSAGE FROM ROOM AT MessageService: " + str(e))
+
+
+def to_vietnam_time( utc_dt: datetime) -> datetime:
+    if utc_dt.tzinfo is None:
+        utc_dt = utc_dt.replace(tzinfo=datetime.timezone.utc)
+    vn_tz = pytz.timezone('Asia/Ho_Chi_Minh')
+    return utc_dt.astimezone(vn_tz)

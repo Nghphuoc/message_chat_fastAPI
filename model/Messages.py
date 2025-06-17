@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timezone
 import uuid
 from sqlalchemy import Column, String, Text, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
@@ -11,7 +11,7 @@ class Message(Base):
     message_id = Column(String(36), primary_key = True, default = lambda: str(uuid.uuid4()), nullable = False)
     content = Column(Text)
     file_url = Column(Text)
-    created_at = Column(DateTime, default = datetime.datetime.now(), nullable = False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable = False)
 
     room = relationship("ChatRoom", back_populates="messages")  # đổi "message" → "messages"
     room_id = Column(String(36), ForeignKey("TB_CHAT_ROOMS.chat_room_id"))
