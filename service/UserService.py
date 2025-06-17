@@ -107,10 +107,11 @@ class UserService:
 
     #step 1 Resolve role
     def _resolve_user_role(self, user: UserRequest) -> str:
-        if user.role_id is None:
-            role = self.role.get_role_by_name(RoleType.MODERATOR)
+        if not user.role_id:
+            role = self.role.get_role_by_role_name(RoleType.MODERATOR)
             return role.role_id
-        return user.role_id
+        else:
+            return user.role_id
 
 
     #step 2 Build user data
