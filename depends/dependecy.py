@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from dbconfig.config import get_db
 from repository.FriendRepository import FriendRepository
 from repository.MessageRepository import MessageRepository
+from repository.ReactionRepository import ReactionRepository
 from repository.RoleRepository import RoleRepository
 from repository.RoomRepository import RoomRepository
 from repository.StatusRepository import StatusRepository
@@ -11,6 +12,7 @@ from repository.UserRepository import UserRepository
 from repository.UserRoomRepository import UserRoomRepository
 from service.FriendService import FriendService
 from service.MessageService import MessageService
+from service.ReactionService import ReactionService
 from service.RoleService import RoleService
 from service.RoomService import RoomService
 from service.StatusService import StatusService
@@ -38,26 +40,31 @@ def role_service(db: Session = Depends(get_db)):
     return RoleService(repo)
 
 
+# user status service
 def user_status_service(db: Session = Depends(get_db)):
     repo = StatusRepository(db)
     return StatusService(repo)
 
 
+# room service
 def room_service(db: Session = Depends(get_db)):
     repo = RoomRepository(db)
     return RoomService(repo)
 
 
+# user room service
 def user_room_service(db: Session = Depends(get_db)):
     repo = UserRoomRepository(db)
     return UserRoomService(repo)
 
 
+# friend service
 def friend_service(db: Session = Depends(get_db)):
     repo = FriendRepository(db)
     return FriendService(repo)
 
 
+# collab user and friend
 def user_and_friend_service(db: Session = Depends(get_db)):
     chat_room = RoomRepository(db)
     chat_room_service = RoomService(chat_room)
@@ -69,7 +76,14 @@ def user_and_friend_service(db: Session = Depends(get_db)):
     return UserAndFriendCreateService(chat_room_service, user_room_service, friend_service)
 
 
+# message service
 def message_service(db: Session = Depends(get_db)):
 
     repo = MessageRepository(db)
     return MessageService(repo)
+
+
+# reaction service
+def reaction_service(db: Session = Depends(get_db)):
+    repo = ReactionRepository(db)
+    return ReactionService(repo)
