@@ -61,6 +61,15 @@ class UserRoomService:
             raise HTTPException(status_code=404, detail="USER_ROOM SERVICE NOT FOUND: " + str(e))
 
 
+    def get_user_id_by_room_id(self, room_id: str) -> list[UserRoomResponse]:
+        try:
+            print("GET USER ROOM BY ID SERVICE")
+            return self.db.get_user_by_room_id(room_id)
+        except Exception as e:
+            print("ERROR GET USER ROOM BY ID SERVICE: ", str(e))
+            raise Exception("USER_ROOM SERVICE NOT FOUND: " + str(e))
+
+
     def delete_user_room_by_id(self, room_id: int) -> bool:
         try:
             print("DELETE USER ROOM BY ID SERVICE")

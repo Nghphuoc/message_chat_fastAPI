@@ -103,3 +103,6 @@ class UserAndFriendCreateService:
             print("ERROR UPDATE FRIEND REQUEST CANCEL AT UserAndFriendCreateService: " + str(e))
             raise HTTPException(status_code=400,
                                 detail={"message": "UPDATE FRIEND REQUEST CANCEL AT UserAndFriendCreateService: " + str(e)})
+
+    # # get list chat for user ( show img friend )
+    # def get_list_user(self, ):

@@ -48,6 +48,14 @@ class UserRoomRepository:
             raise Exception("Error while getting user room: " + str(e))
 
 
+    def get_user_by_room_id(self, room_id: str):
+        try:
+            return self.db.query(UserRoom).filter(UserRoom.room_id == room_id).all()
+        except Exception as e:
+            self.db.rollback()
+            raise Exception("Error while getting user room: " + str(e))
+
+
     def delete_user_room(self, user_room_id: str):
         try:
             self.db.query(UserRoom).filter(UserRoom.user_id == user_room_id).delete()
