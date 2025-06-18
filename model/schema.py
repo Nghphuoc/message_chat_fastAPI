@@ -137,3 +137,25 @@ class UserRoomResponse(BaseModel):
     joined_at: Optional[datetime]
     class Config:
         orm_mode = True
+
+
+# Reaction
+class ReactionRequest(BaseModel):
+    user_id: str
+    message_id: str
+    emoji: str
+    created_at: Optional[datetime]
+
+class ReactionResponse(BaseModel):
+    reaction_id: str
+    message_id: str
+    emoji: str
+    created_at: Optional[datetime]
+    class Config:
+        orm_mode = True
+
+
+class UserInRoomResponse(BaseModel):
+    img_url: str
+    username: str
+    room_id: str
