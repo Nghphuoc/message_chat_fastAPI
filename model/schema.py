@@ -159,3 +159,15 @@ class UserInRoomResponse(BaseModel):
     img_url: str
     username: str
     room_id: str
+
+
+#Login
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+
+#Token
+class TokenData(BaseModel):
+    username: Optional[str] = None
+    role: Optional[str] = None
