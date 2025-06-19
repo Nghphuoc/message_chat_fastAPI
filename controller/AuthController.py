@@ -13,7 +13,7 @@ import os
 load_dotenv()
 
 
-router= APIRouter(prefix="/auth", tags=["Auth"])
+router= APIRouter(prefix="/api/auth", tags=["Auth"])
 # encoder = CryptContext(schemes=["bcrypt"], deprecated="auto") lap personal
 encoder = CryptContext(schemes=["argon2"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth")
@@ -64,7 +64,7 @@ def auth(login: LoginRequest, service: UserService = Depends(user_service)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     if not encoder.verify(login.password, user.password):
-        raise HTTPException(status_code=404, detail="Incorrect password")
+        raise HTTPException(status_code=500, detail="Incorrect password")
     access_token = generate_token(data={"sub": user.username, "role": user.role.role_name.value})
     return {"access_token": access_token, "infor_user": user, "token_type": "bearer"}
 
