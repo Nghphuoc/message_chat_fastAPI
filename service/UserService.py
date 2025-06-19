@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from fastapi import HTTPException
+
 from model import UserStatus
 from model.Role import RoleType
 from model.User import Users
@@ -99,6 +101,21 @@ class UserService:
         except Exception as e:
             print("Error GET USER AT USER SERVICE: ", str(e))
             raise Exception("Error GET USER AT USER SERVICE: "+ str(e))
+
+
+    def for_got_password(self, email: str, password: str, new_password: str) -> UserResponse:
+        encrypted_password = encoder.encrypt(password)
+        encrypted_new_password = encoder.encrypt(new_password)
+        try:
+            print("FOR GOT PASSWORD AT USER SERVICE")
+            user_data = self.db.get_user_by_email(email)
+            if not encoder.verify(user_data.password, encrypted_password):
+                raise HTTPException(status_code=404, detail="Incorrect password")
+            user_data.password = encrypted_new_password
+            return self.db.create_user_(user_data)
+        except Exception as e:
+            print("Error FOR GOT PASSWORD AT USER SERVICE: ", str(e))
+            raise Exception("Error FOR GOT PASSWORD AT USER SERVICE: "+ str(e))
 
 
     def add_user(self, user: UserRequest) -> UserResponse:

@@ -16,7 +16,6 @@ load_dotenv()
 router= APIRouter(prefix="/auth", tags=["Auth"])
 # encoder = CryptContext(schemes=["bcrypt"], deprecated="auto") lap personal
 encoder = CryptContext(schemes=["argon2"], deprecated="auto")
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth")
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
@@ -75,5 +74,14 @@ async def create_user_control(user: UserRequest ,service: UserService = Depends(
     try:
         user_data = service.add_user(user)
         return user_data
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"message": str(e)})
+
+
+@router.put("/forgot_password", status_code=status.HTTP_200_OK, response_model=UserResponse)
+async def for_got_password(email: str, password: str, new_password: str, service: UserService = Depends(user_service)):
+    try:
+        service.for_got_password(email, password, new_password)
+        return {"message": "update password successfully"}
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"message": str(e)})

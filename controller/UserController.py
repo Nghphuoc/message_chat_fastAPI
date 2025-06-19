@@ -1,6 +1,8 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
+
+from controller.AuthController import is_admin
 from depends.dependecy import user_service
 from model.schema import UserRequest, UserResponse
 from service import UserService
@@ -43,7 +45,7 @@ async def update_user_control(user_id: str, user: UserRequest ,service: UserServ
 
 
 @router.delete("/delete/{user_id}",status_code=status.HTTP_202_ACCEPTED)
-async def delete_user_control(user_id: str, service: UserService = Depends(user_service)):
+async def delete_user_control(user_id: str = Depends(is_admin), service: UserService = Depends(user_service)):
     try:
         if service.delete_user_by_column(user_id):
             return {"message": "Delete success"}
