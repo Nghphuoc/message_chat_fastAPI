@@ -6,7 +6,12 @@ from model.User import Users
 from model.schema import UserRequest, UserResponse
 from repository import UserRepository
 from service import RoleService, StatusService
+from passlib.context import CryptContext
 
+
+# encoder = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+encoder = CryptContext(schemes=["argon2"], deprecated="auto")
 
 class UserService:
 
@@ -85,6 +90,17 @@ class UserService:
            raise Exception("Error UPDATE USER AT USER SERVICE: "+str(e))
 
 
+    def get_user_by_email(self, email: str) -> UserResponse:
+        try:
+            print("GET USER AT USER SERVICE")
+            user_data = self.db.get_user_by_email(email)
+            print("User data:", user_data)
+            return UserResponse.from_orm(user_data)
+        except Exception as e:
+            print("Error GET USER AT USER SERVICE: ", str(e))
+            raise Exception("Error GET USER AT USER SERVICE: "+ str(e))
+
+
     def add_user(self, user: UserRequest) -> UserResponse:
         #step 4: validate param
         self.validate_user(user)
@@ -116,9 +132,10 @@ class UserService:
 
     #step 2 Build user data
     def _build_user_data(self, user: UserRequest, role_id: str) -> Users:
+        password_hash = encoder.hash(user.password)
         return Users(
             username=user.username,
-            password=user.password,
+            password=password_hash,
             email=user.email,
             phone=user.phone,
             img_url=user.img_url,
