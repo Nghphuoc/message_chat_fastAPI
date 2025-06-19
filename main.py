@@ -26,7 +26,6 @@ import model
 from dbconfig import config
 print("Database URL:", config.DATABASE_URL)
 
-
 app = FastAPI()
 
 app.add_middleware(

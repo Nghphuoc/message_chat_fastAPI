@@ -31,7 +31,7 @@ class UserService:
             return [UserResponse.from_orm(user) for user in users]
         except Exception as e:
             print("ERROR GET ALL FROM TABLE TB_USERS AT USER SERVICE: " + str(e))
-            raise Exception("ERROR GET ALL FROM TABLE TB_USERS AT USER SERVICE: " + str(e))
+            raise Exception(e)
 
 
     def get_user_by_id(self, user_id: str) -> UserResponse:
@@ -41,7 +41,7 @@ class UserService:
             return UserResponse.from_orm(user_data)
         except Exception as e:
             print("ERROR GET DETAIL FROM TABLE TB_USERS AT USER SERVICE: " + str(e))
-            raise Exception("ERROR GET DETAIL FROM TABLE TB_USERS AT USER SERVICE: " + str(e))
+            raise Exception(e)
 
 
     # delete by set column
@@ -53,7 +53,7 @@ class UserService:
             return True
         except Exception as e:
             print("Error DELETE USER AT USER SERVICE: ", str(e))
-            raise Exception("Error DELETE USER AT USER SERVICE: "+ str(e))
+            raise Exception(e)
 
 
     # delete from database (for ADMIN role)
@@ -64,7 +64,7 @@ class UserService:
             return UserResponse.from_orm(self.db.delete_user_by_id(user_id))
         except Exception as e:
             print("Error DELETE USER AT USER SERVICE: ", str(e))
-            raise Exception("Error DELETE USER AT USER SERVICE: "+ str(e))
+            raise Exception(e)
 
 
     def update_user(self ,user_id: str, user: UserRequest) -> UserResponse:
@@ -89,7 +89,7 @@ class UserService:
            return self.db.create_user_(old_user)
        except Exception as e:
            print("Error UPDATE USER AT USER SERVICE: ", str(e))
-           raise Exception("Error UPDATE USER AT USER SERVICE: "+str(e))
+           raise Exception(e)
 
 
     def get_user_by_email(self, email: str) -> UserResponse:
@@ -100,7 +100,7 @@ class UserService:
             return UserResponse.from_orm(user_data)
         except Exception as e:
             print("Error GET USER AT USER SERVICE: ", str(e))
-            raise Exception("Error GET USER AT USER SERVICE: "+ str(e))
+            raise Exception(e)
 
 
     def for_got_password(self, email: str, password: str, new_password: str) -> UserResponse:
@@ -115,7 +115,7 @@ class UserService:
             return self.db.create_user_(user_data)
         except Exception as e:
             print("Error FOR GOT PASSWORD AT USER SERVICE: ", str(e))
-            raise Exception("Error FOR GOT PASSWORD AT USER SERVICE: "+ str(e))
+            raise Exception(e)
 
 
     def add_user(self, user: UserRequest) -> UserResponse:
@@ -135,7 +135,7 @@ class UserService:
             return created_user
         except Exception as e:
             print("Error CREATE USER AT USER SERVICE: ", str(e))
-            raise Exception("Error CREATE USER AT USER SERVICE: " + str(e))
+            raise Exception(e)
 
 
     #step 1 Resolve role
@@ -174,7 +174,7 @@ class UserService:
             self.status.insert_status(status)
         except Exception as e:
             print("ERROR CREATE USER STATUS: " + str(e))
-            raise Exception("ERROR CREATE USER STATUS: " + str(e))
+            raise Exception(e)
 
 
     # step 4: check all param user info
