@@ -89,6 +89,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, user_id: str,
             pass
         finally:
             # Xóa client khi disconnect
+            service.update_status(user_id=user_id, is_online=False)
             connected_clients[room_id].discard(websocket)
             if not connected_clients[room_id]:
                 service.update_status(user_id, False)  # 👉 OFFLINE
