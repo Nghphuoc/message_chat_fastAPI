@@ -62,7 +62,7 @@ class UserStatusResponse(BaseModel):
     user_status_id: str
     is_online: bool
     last_seen: datetime
-    user: UserResponse
+    user_id: str
     class Config:
         orm_mode = True  # Dành cho Pydantic v1
 
@@ -159,6 +159,10 @@ class UserInRoomResponse(BaseModel):
     img_url: str
     username: str
     room_id: str
+    status: bool
+    last_seen: Optional[datetime]
+    class Config:
+        orm_mode = True
 
 
 #Login
