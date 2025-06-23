@@ -36,8 +36,6 @@ class StatusRepository:
     def get_status_by_id(self, status_id: str):
         try:
             self.db.query(UserStatus).filter(UserStatus.status_id == status_id).one()
-            self.db.commit()
-            self.db.refresh(UserStatus)
         except Exception as e:
             self.db.rollback()
             print("Error getting status" + str(e))
@@ -46,13 +44,14 @@ class StatusRepository:
 
     def get_status_by_user_id(self, user_id: str):
         try:
-            self.db.query(UserStatus).filter(UserStatus.user_id == user_id).one()
-            self.db.commit()
-            self.db.refresh(UserStatus)
+            status = self.db.query(UserStatus).filter(UserStatus.user_id == user_id).first()
+            if not status:
+                raise Exception("Status not found")
+            return status
         except Exception as e:
             self.db.rollback()
-            print("Error getting status" + str(e))
-            raise Exception("Error getting status" + str(e))
+            print("Error getting status: " + str(e))
+            raise
 
 
     def update_user_status(self, user_id: str, is_online: bool):
