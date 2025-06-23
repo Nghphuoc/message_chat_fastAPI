@@ -2,9 +2,10 @@ from typing import List
 from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends
 from starlette import status
-from depends.dependecy import user_room_service, room_service, message_service, user_service
+from depends.dependecy import user_room_service, room_service, message_service, user_service, user_status_service
 from model.schema import ChatRoomResponse, MessageResponse, UserRoomResponse, UserInRoomResponse
-from service import UserRoomService, RoomService, MessageService, UserService
+from service import UserRoomService, RoomService, MessageService, UserService, StatusService
+from service.MessageService import to_vietnam_time
 
 router = APIRouter(prefix="/api/room/user", tags=["GetRoomForUser"])
 
@@ -12,7 +13,8 @@ router = APIRouter(prefix="/api/room/user", tags=["GetRoomForUser"])
 @router.get("/list_chat/{user_id}", response_model=List[UserInRoomResponse], status_code=status.HTTP_200_OK)
 async def get_all_room_of_user(user_id: str,
                                service_user_room: UserRoomService = Depends(user_room_service),
-                               user_service: UserService = Depends(user_service)):
+                               user_service: UserService = Depends(user_service),
+                               user_status: StatusService = Depends(user_status_service)):
 
     try:
         room_ids = service_user_room.get_all_list_room_for_user(user_id)  # List of (room_id,)
@@ -25,6 +27,8 @@ async def get_all_room_of_user(user_id: str,
             for user_room in user_rooms:
                 if str(user_room.user_id) != str(user_id):
                     user_info = user_service.get_user_by_id(user_room.user_id)
+                    # get status from user show with chat room call service
+                    status_user = user_status.get_status_by_user(user_info.user_id)
 
                     if user_info.display_name:
                         name = user_info.display_name
@@ -35,7 +39,9 @@ async def get_all_room_of_user(user_id: str,
                         result.append(UserInRoomResponse(
                             img_url=user_info.img_url,
                             username=name,
-                            room_id=user_room.room_id
+                            room_id=user_room.room_id,
+                            status=status_user.is_online,
+                            last_seen=to_vietnam_time(status_user.last_seen),
                         ))
 
         return result

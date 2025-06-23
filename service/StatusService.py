@@ -35,7 +35,8 @@ class StatusService:
     def get_status_by_user(self, user_id: str) -> UserStatusResponse:
         try:
             print("GET STATUS AT SATUS SERVICE")
-            return self.db.get_status_by_user_id(user_id)
+            data = self.db.get_status_by_user_id(user_id)
+            return UserStatusResponse.from_orm(data)
         except Exception as e:
             print("ERROR CANNOT GET STATUS AT STATUS SERVICE: " + str(e))
             raise HTTPException(status_code=404, detail=f"ERROR CANNOT GET STATUS AT STATUS SERVICE: " + str(e))
