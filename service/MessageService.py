@@ -4,13 +4,14 @@ from fastapi import HTTPException
 import pytz
 from model import Message
 from model.schema import MessageRequest, MessageResponse
-from repository import MessageRepository
+from repository import MessageRepository, ReactionRepository
 
 
 class MessageService:
 
-    def __init__(self, repo: MessageRepository):
+    def __init__(self, repo: MessageRepository, reaction: ReactionRepository):
         self.db = repo
+        self.reaction = reaction
 
 
     def insert_message(self, message: MessageRequest)-> MessageResponse:
@@ -49,6 +50,9 @@ class MessageService:
             # Convert each message into the desired dictionary format
             result = []
             for message_data in data_messages:
+
+                reaction = self.reaction.get_reaction_by_message_id(message_data.message_id)
+
                 user_id = message_data.user.user_id
                 name_user = message_data.user.username
                 img_url = message_data.user.img_url  # or message_data.user.img_url depending on your model
@@ -63,6 +67,7 @@ class MessageService:
                     "room_id": room_id,
                     "content": content,
                     "created_at": created_at,
+                    "icon": reaction,
                 }
                 result.append(message_dict)
 

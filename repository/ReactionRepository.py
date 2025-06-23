@@ -32,7 +32,18 @@ class ReactionRepository:
     # get icon by message_id
     def get_reaction_by_message_id(self, message_id: str):
         try:
-            return self.db.query(Reaction).filter(Reaction.message_id == message_id).all()
+            results = self.db.query(Reaction).filter(Reaction.message_id == message_id).all()
+
+            if not results:
+                # Không có reaction nào
+                return None
+            elif len(results) == 1:
+                # Có đúng 1 reaction
+                return results[0]
+            else:
+                # Có nhiều reaction
+                return results
+
         except Exception as e:
             raise Exception("ERROR GET REACTION AT ReactionRepository: ", e)
 
