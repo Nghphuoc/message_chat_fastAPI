@@ -78,9 +78,9 @@ def user_and_friend_service(db: Session = Depends(get_db)):
 
 # message service
 def message_service(db: Session = Depends(get_db)):
-
     repo = MessageRepository(db)
-    return MessageService(repo)
+    reaction = ReactionRepository(db)
+    return MessageService(repo, reaction)
 
 
 # reaction service
