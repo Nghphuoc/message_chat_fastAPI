@@ -6,6 +6,11 @@ from model import Message
 from model.schema import MessageRequest, MessageResponse
 from repository import MessageRepository, ReactionRepository
 
+"""
+@author: PhuocHN
+@version: 1.12
+@function_id: none
+"""
 
 class MessageService:
 
@@ -13,7 +18,11 @@ class MessageService:
         self.db = repo
         self.reaction = reaction
 
-
+    """
+    create new message
+    @param: message : MessageRequest
+    @return: MessageResponse
+    """
     def insert_message(self, message: MessageRequest)-> MessageResponse:
         try:
             print("CREATE MESSAGE AT MessageService")
@@ -30,7 +39,11 @@ class MessageService:
             print("ERROR CREATE MESSAGE AT MessageService: " + str(e))
             raise HTTPException(status_code=500, detail="ERROR CREATE MESSAGE AT MessageService: " + str(e))
 
-
+    """
+    get all message
+    @:param none
+    @:return: MessageResponse 
+    """
     def get_message(self) -> list[MessageResponse]:
         try:
             print("GET MESSAGE AT MessageService")
@@ -41,7 +54,11 @@ class MessageService:
             raise HTTPException(status_code=500, detail="ERROR CREATE MESSAGE AT MessageService: " + str(e))
 
 
-    # get all message from room_id
+    """
+    get all message from room_id
+    @:param room_id : str
+    @:return: dict
+    """
     def get_all_message_from_room(self, room_id: str) -> list[dict]:
         try:
             print("GET ALL MESSAGE FROM ROOM AT MessageService")
@@ -77,7 +94,11 @@ class MessageService:
             print("ERROR GET ALL MESSAGE FROM ROOM AT MessageService: " + str(e))
             raise HTTPException(status_code=500, detail="ERROR ALL MESSAGE FROM ROOM AT MessageService: " + str(e))
 
-
+"""
+parse time global to vietnam_time GMT +7
+@param: utc_dt : datetime
+@return: datetime
+"""
 def to_vietnam_time( utc_dt: datetime) -> datetime:
     if utc_dt.tzinfo is None:
         utc_dt = utc_dt.replace(tzinfo=datetime.timezone.utc)

@@ -8,6 +8,11 @@ from service import FriendService
 from service.RoomService import RoomService
 from service.UserRoomService import UserRoomService
 
+"""
+@author <PhuocHN>
+@version <1.12>
+@function_id none
+"""
 
 class UserAndFriendCreateService:
 
@@ -16,7 +21,11 @@ class UserAndFriendCreateService:
         self.user_room = user_room
         self.friend = friend
 
-
+    """
+    create friendship logic create ( room and update status friend )
+    @:param user_id : str
+    @param friend_id : str
+    """
     def create_fiend_ship(self, user_id: str, friend_id: str):
 
         # check user friend
@@ -41,7 +50,7 @@ class UserAndFriendCreateService:
             except Exception as e:
                 print("ERROR CREATE FIEND SHIP AT UserAndFriendCreateService: " + str(e))
                 raise HTTPException(status_code=500,
-                                    detail="ERROR CREATE FIEND SHIP AT UserAndFriendCreateService: " + str(e))
+                                    detail={"message": e})
 
             try:
                 room_data = ChatRoom(name="default",
@@ -53,7 +62,7 @@ class UserAndFriendCreateService:
             except Exception as e:
                 print("ERROR CREATE CHAT ROOM AT UserAndFriendCreateService: " + str(e))
                 raise HTTPException(status_code=500,
-                                    detail="ERROR CREATE ROOM AT UserAndFriendCreateService: " + str(e))
+                                    detail={"message": e})
 
             try:
                 # call user room service
@@ -62,20 +71,30 @@ class UserAndFriendCreateService:
             except Exception as e:
                 print("ERROR CREATE USER ROOM AT UserAndFriendCreateService: " + str(e))
                 raise HTTPException(status_code=500,
-                                    detail="ERROR CREATE ROOM AT UserAndFriendCreateService: " + str(e))
+                                    detail={"message": e})
 
 
-    # just use for accept friend
+    """
+    update status just use for accept friend
+    @:param user_id : str
+    @:param friend_id : str
+    @:param status : TypeStatus
+    """
     def update_status_accept_friend(self, user_id: str, friend_id: str, status: TypeStatus):
         try:
             print("UPDATE STATUS FRIEND AT UserAndFriendCreateService")
             self.friend.update_relationship_status(user_id, friend_id, status)
         except Exception as e:
             print("ERROR UPDATE FRIEND AT UserAndFriendCreateService: " + str(e))
-            raise HTTPException(status_code=400, detail="ERROR UPDATE FRIEND AT UserAndFriendCreateService: " + str(e))
+            raise HTTPException(status_code=400, detail={"message": e})
 
 
-    # use reject friend
+    """
+    update status use reject friend ( cancel or block )
+    @:param user_id : str
+    @:param friend_id : str
+    @:param status : TypeStatus
+    """
     def update_status_reject_friend(self, user_id: str, friend_id: str, status: TypeStatus):
         try:
             print("UPDATE REJECT STATUS FRIEND AT UserAndFriendCreateService")
@@ -83,10 +102,14 @@ class UserAndFriendCreateService:
         except Exception as e:
             print("ERROR UPDATE FRIEND AT UserAndFriendCreateService: " + str(e))
             raise HTTPException(status_code=400,
-                                detail="ERROR UPDATE REJECT FRIEND AT UserAndFriendCreateService: " + str(e))
+                                detail={"message": e})
 
 
-    # update when user cancel friend
+    """
+    update friend update when user cancel friend
+    @:param data_user : Friendship
+    @:param data_friend : Friendship
+    """
     # step 1: check already
     def update_friend_request(self, data_user: Friendship, data_friend: Friendship):
         try:
@@ -102,7 +125,7 @@ class UserAndFriendCreateService:
         except Exception as e:
             print("ERROR UPDATE FRIEND REQUEST CANCEL AT UserAndFriendCreateService: " + str(e))
             raise HTTPException(status_code=400,
-                                detail={"message": "UPDATE FRIEND REQUEST CANCEL AT UserAndFriendCreateService: " + str(e)})
+                                detail={"message": e})
 
     # # get list chat for user ( show img friend )
     # def get_list_user(self, ):

@@ -6,13 +6,22 @@ from model import Reaction
 from model.schema import ReactionRequest, ReactionResponse
 from repository import ReactionRepository
 
+""" 
+@author: <PhuocHN>
+@version: <1.12>
+@function_id: none
+"""
 
 class ReactionService:
 
     def __init__(self, repo: ReactionRepository):
         self.db = repo
 
-
+    """
+    create or update a reaction
+    @param: reaction : ReactionRequest
+    @return: ReactionResponse
+    """
     def create_reaction_and_update(self, reaction: ReactionRequest) -> ReactionResponse :
         try:
             # step 1: find reaction of message and user
@@ -24,6 +33,7 @@ class ReactionService:
                     return ReactionResponse.from_orm(update)
                 else:
                     # step 1.3: call service update reaction
+                    print("UPDATE REACTION: " + update.emoji + " REACTION: " + reaction.emoji)
                     update.emoji = reaction.emoji
                     update.created_at = reaction.created_at
                     return self.db.insert_reaction(update)
@@ -41,7 +51,11 @@ class ReactionService:
             print("ERROR CREATE REACTION AT ReactionService: " + str(e))
             raise HTTPException(status_code=500, detail={"message ": e})
 
-
+    """
+    get list reaction from message
+    @param: message_id : str
+    @return: ReactionResponse
+    """
     def get_reactions_by_message_id(self, message_id: str) -> List[ReactionResponse]:
         try:
             print("GET REACTIONS BY MESSAGE ID AT ReactionService")
@@ -51,7 +65,11 @@ class ReactionService:
             print("ERROR GET REACTIONS BY MESSAGE ID AT ReactionService: " + str(e))
             raise HTTPException(status_code=500, detail={"message ": e})
 
-
+    """
+    delete a reaction from message
+    @param: reaction_id : str
+    @return: True
+    """
     def delete_reaction(self, reaction_id: str):
         try:
             print("DELETE REACTION AT ReactionService")
@@ -62,7 +80,12 @@ class ReactionService:
             raise HTTPException(status_code=500, detail={"message ": e})
 
 
-    # step 1: find reaction of message and user
+    """
+    get a reaction from user sent to message
+    @param: message_id : str
+    @param: user_id : str
+    @return: ReactionResponse
+    """
     def get_reaction_of_user(self, message_id: str, user_id: str)-> ReactionResponse:
         try:
             print("GET REACTION OF USER AT ReactionService")

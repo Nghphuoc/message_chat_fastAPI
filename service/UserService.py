@@ -11,7 +11,10 @@ from service import RoleService, StatusService
 from passlib.context import CryptContext
 
 
-# encoder = CryptContext(schemes=["bcrypt"], deprecated="auto")
+"""@author <PhuocHN>
+@version <1.12>
+@function_id none
+"""
 
 encoder = CryptContext(schemes=["argon2"], deprecated="auto")
 
@@ -22,7 +25,10 @@ class UserService:
         self.role = role
         self.status = status
 
-
+    """
+    get all users
+    @:return list[UserResponse]
+    """
     def get_user(self) -> list[UserResponse]:
         try:
             print("GET ALL FROM TABLE TB_USERS AT USER SERVICE")
@@ -33,7 +39,11 @@ class UserService:
             print("ERROR GET ALL FROM TABLE TB_USERS AT USER SERVICE: " + str(e))
             raise Exception(e)
 
-
+    """
+    get user by id
+    @:param user_id : str
+    @:return UserResponse
+    """
     def get_user_by_id(self, user_id: str) -> UserResponse:
         try:
             print("GET DETAIL FROM TABLE TB_USERS AT USER SERVICE")
@@ -44,7 +54,11 @@ class UserService:
             raise Exception(e)
 
 
-    # delete by set column
+    """
+    delete by set column
+    @param user_id : str
+    @:return bool
+    """
     def delete_user_by_column(self, user_id: str) -> bool:
         try:
             print("DELETE USER AT USER SERVICE")
@@ -56,7 +70,11 @@ class UserService:
             raise Exception(e)
 
 
-    # delete from database (for ADMIN role)
+    """
+    #delete from database (for ADMIN role)
+    @:param user_id : str
+    @:return UserResponse
+    """
     def delete_user(self, user_id: str) -> UserResponse:
         try:
             print("DELETE USER AT USER SERVICE")
@@ -66,7 +84,12 @@ class UserService:
             print("Error DELETE USER AT USER SERVICE: ", str(e))
             raise Exception(e)
 
-
+    """
+    update infor user
+    @:param user_id : str
+    @:param user : UserRequest
+    @return UserResponse
+    """
     def update_user(self ,user_id: str, user: UserRequest) -> UserResponse:
        try:
            old_user = self.db.get_user_by_id(user_id)
@@ -91,7 +114,11 @@ class UserService:
            print("Error UPDATE USER AT USER SERVICE: ", str(e))
            raise Exception(e)
 
-
+    """
+    get user by email
+    @:param email : str
+    @:return UserResponse
+    """
     def get_user_by_email(self, email: str) -> UserResponse:
         try:
             print("GET USER AT USER SERVICE")
@@ -102,7 +129,13 @@ class UserService:
             print("Error GET USER AT USER SERVICE: ", str(e))
             raise Exception(e)
 
-
+    """
+    forgot password 
+    @param email : str
+    @:param password : str
+    @:param new_password : str
+    @:return UserResponse
+    """
     def for_got_password(self, email: str, password: str, new_password: str) -> UserResponse:
         encrypted_password = encoder.encrypt(password)
         encrypted_new_password = encoder.encrypt(new_password)
@@ -117,7 +150,11 @@ class UserService:
             print("Error FOR GOT PASSWORD AT USER SERVICE: ", str(e))
             raise Exception(e)
 
-
+    """
+    add user create new user
+    @:param user : UserRequest
+    @:return UserResponse
+    """
     def add_user(self, user: UserRequest) -> UserResponse:
         #step 4: validate param
         self.validate_user(user)
@@ -138,7 +175,11 @@ class UserService:
             raise Exception(e)
 
 
-    #step 1 Resolve role
+    """
+    step 1 Resolve role
+    @:param user : UserRequest
+    @:return str
+    """
     def _resolve_user_role(self, user: UserRequest) -> str:
         if not user.role_id:
             role = self.role.get_role_by_role_name(RoleType.MODERATOR)
@@ -147,7 +188,12 @@ class UserService:
             return user.role_id
 
 
-    #step 2 Build user data
+    """
+    step 2 Build user data
+    @:param user : UserRequest
+    @:param role_id : str
+    @:return Users
+    """
     def _build_user_data(self, user: UserRequest, role_id: str) -> Users:
         password_hash = encoder.hash(user.password)
         return Users(
@@ -163,7 +209,10 @@ class UserService:
         )
 
 
-    #step 3 create status
+    """
+    step 3 create status
+    @:param user_id : str
+    """
     def _create_user_status(self, user_id: str):
         try:
             status = UserStatus(
@@ -177,7 +226,10 @@ class UserService:
             raise Exception(e)
 
 
-    # step 4: check all param user info
+    """
+    step 4: check all param user info
+    @:param user : UserRequest
+    """
     def validate_user(self, user: UserRequest):
         #step 5: check phone
         self.check_duplicate_phone(user.phone)
@@ -186,7 +238,10 @@ class UserService:
             raise Exception("EMAIL ALREADY IN TABLE TB_USERS")
 
 
-    # step 5: check param phone
+    """
+    step 5: check param phone
+    @param phone : str
+    """
     def check_duplicate_phone(self, phone: str):
         if self.db.get_user_by_phone(phone):
             print("Error PHONE ALREADY IN TABLE TB_USERS")

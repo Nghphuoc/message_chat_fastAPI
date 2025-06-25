@@ -4,14 +4,22 @@ from model import ChatRoom
 from model.schema import ChatRoomRequest, ChatRoomResponse
 from repository import RoomRepository
 
-
+"""
+@author <PhuocHN>
+@version <1.12>
+@function_id none
+"""
 class RoomService:
 
 
     def __init__(self, repo: RoomRepository):
         self.db = repo
 
-
+    """
+    create new room
+    @param: room : ChatRoomRequest
+    @return: ChatRoomResponse 
+    """
     def insert_room(self, room: ChatRoomRequest) -> ChatRoomResponse:
         try:
             print("CREATE CHAT ROOM AT ROOM SERVICE")
@@ -22,9 +30,12 @@ class RoomService:
             return self.db.create_room(room_data)
         except Exception as e:
             print("ERROR CREATE CHAT ROOM AT ROOM SERVICE: " + str(e))
-            raise HTTPException(status_code=500, detail="ERROR CREATE CHAT ROOM SERVICE: " + str(e))
+            raise HTTPException(status_code=500, detail={"message": e})
 
-
+    """
+    get list rooms ( all )
+    @return: list[ChatRoomResponse] 
+    """
     def get_room_list(self)-> list[ChatRoomResponse]:
         try:
             print("GET ALL CHAT ROOM LIST SERVICE")
@@ -33,9 +44,13 @@ class RoomService:
             return [ChatRoomResponse.from_orm(room) for room in room_data]
         except Exception as e:
             print("ERROR GET ALL CHAT ROOM LIST SERVICE: " + str(e))
-            raise HTTPException(status_code=404, detail="ERROR GET ALL CHAT ROOM LIST SERVICE: " + str(e))
+            raise HTTPException(status_code=404, detail={"message": e})
 
-
+    """
+    get detail room by room_id
+    @param: room_id : str
+    @return: ChatRoomResponse 
+    """
     def get_room(self, room_id: str) -> ChatRoomResponse:
         try:
             print("GET CHAT ROOM AT ROOM SERVICE")
@@ -43,9 +58,14 @@ class RoomService:
             return ChatRoomResponse.from_orm(room_data)
         except Exception as e:
             print("ERROR GET CHAT ROOM AT ROOM SERVICE: " + str(e))
-            raise HTTPException(status_code=404, detail="ERROR GET CHAT ROOM SERVICE: " + str(e))
+            raise HTTPException(status_code=404, detail={"message": e})
 
-
+    """
+    update room by room_id
+    @param: room_id : str
+    @param: room : ChatRoomRequest
+    @return: ChatRoomResponse 
+    """
     def update_room(self,room_id: str, room: ChatRoomRequest) -> ChatRoomResponse:
         try:
             print("UPDATE CHAT ROOM AT ROOM SERVICE")
@@ -54,8 +74,8 @@ class RoomService:
             if room_old is not None:
                 room_old.name = room.name
                 self.db.update_room(room_old)
-                return ChatRoomResponse.from_orm(room)
+            return ChatRoomResponse.from_orm(room)
         except Exception as e:
             print("ERROR UPDATE CHAT ROOM AT ROOM SERVICE: " + str(e))
-            raise HTTPException(status_code=404, detail="ERROR UPDATE CHAT ROOM SERVICE: " + str(e))
+            raise HTTPException(status_code=404, detail={"message": e})
 
