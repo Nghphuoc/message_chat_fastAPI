@@ -47,3 +47,12 @@ class ReactionRepository:
         except Exception as e:
             raise Exception("ERROR GET REACTION AT ReactionRepository: ", e)
 
+
+    def get_reaction_by_message_id_and_user_id(self, message_id: str, user_id: str):
+        try:
+            return (self.db.query(Reaction)
+                    .filter(Reaction.message_id == message_id)
+                    .filter(Reaction.user_id == user_id).one_or_none())
+        except Exception as e:
+            print("ERROR GET REACTION AT ReactionRepository: ", e)
+            raise Exception("ERROR GET REACTION AT ReactionRepository: ", e)
