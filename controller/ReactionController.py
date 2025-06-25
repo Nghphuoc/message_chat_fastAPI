@@ -17,9 +17,9 @@ async def get_detail(message_id: str, service: ReactionService = Depends(reactio
 
 
 @router.post("/create", response_model=ReactionResponse, status_code=status.HTTP_201_CREATED)
-async def create(reaction: ReactionRequest, service: ReactionService = Depends(reaction_service)):
+async def create_and_update(reaction: ReactionRequest, service: ReactionService = Depends(reaction_service)):
     try:
-        return service.create_reaction(reaction)
+        return service.create_reaction_and_update(reaction)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": str(e)})
 
