@@ -50,7 +50,7 @@ async def get_all_room_of_user(user_id: str,
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": str(e)})
 
 
-@router.get("/message", status_code=status.HTTP_200_OK, response_model=list[MessageResponse])
+@router.get("/message", status_code=status.HTTP_200_OK, response_model=list[dict])
 async def get_all_message(room_id: str, message_service: MessageService = Depends(message_service)):
     try:
         data = message_service.get_all_message_from_room(room_id)
