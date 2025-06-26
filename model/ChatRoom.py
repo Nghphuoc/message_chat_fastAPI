@@ -15,4 +15,6 @@ class ChatRoom(Base):
     created_at = Column(DateTime, default = datetime.datetime.now(), nullable=False)
     created_by = Column(String(36))
 
+    # time_change = Column(DateTime, default = datetime.datetime.now(), nullable=False)
+    # action = Column(String(255))
     messages = relationship("Message", back_populates="room")  # đổi tên thuộc tính thành "messages"
