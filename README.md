@@ -220,3 +220,47 @@ Khi cần phản hồi real-time, không delay.
 Khi muốn tách logic gửi/nhận tin nhắn khỏi WebSocket.
 
 
+## websocket.py
+@router.websocket("/ws/{room_id}/{user_id}")
+async def chat_ws(ws: WebSocket, room_id: str, user_id: str):
+    # 1. Chấp nhận kết nối WebSocket
+    await ws.accept()
+
+    # 2. Đăng ký kết nối người dùng vào bộ nhớ để broadcast sau
+    register(ws, room_id, user_id)
+
+    # 3. Lặp để nhận tin nhắn liên tục từ client
+    while True:
+        # 4. Nhận dữ liệu dạng JSON text từ client
+        raw = await ws.receive_text()
+        payload = json.loads(raw)  # JSON -> dict
+
+        # 5. Tách ra các phần: type và data
+        type_ = payload["type"]
+        data = payload["data"]
+
+        # 6. Xử lý theo loại tin nhắn gửi tới
+        if type_ == "send_message":
+            # Gửi tin nhắn: lưu vào database, rồi publish Redis để sync
+            save_to_db(data)
+            await redis.publish(f"room:{room_id}", json.dumps(payload))
+
+        elif type_ == "reaction":
+            # Thả emoji: lưu vào DB và publish để các client cùng phòng nhận được
+            save_reaction(data)
+            await redis.publish(f"room:{room_id}", json.dumps(payload))
+
+        elif type_ == "typing":
+            # Trạng thái đang gõ: broadcast trực tiếp, không cần lưu DB hay Redis
+            await broadcast(room_id, payload)
+
+
+const socket = new WebSocket("ws://localhost:8000/ws/r1/u1");
+
+socket.onmessage = (e) => {
+  const { type, data } = JSON.parse(e.data);
+  if (type === "new_message") showMessage(data);
+  if (type === "reaction") updateReaction(data);
+  if (type === "typing") showTyping(data.user_id);
+};
+
