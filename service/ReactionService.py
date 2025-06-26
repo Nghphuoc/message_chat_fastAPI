@@ -60,6 +60,8 @@ class ReactionService:
         try:
             print("GET REACTIONS BY MESSAGE ID AT ReactionService")
             data = self.db.get_reaction_by_message_id(message_id)
+            if not data:
+                return []  # hoặc raise 404 nếu muốn
             return [ReactionResponse.from_orm(item) for item in data]
         except Exception as e:
             print("ERROR GET REACTIONS BY MESSAGE ID AT ReactionService: " + str(e))
