@@ -24,7 +24,7 @@ async def create_and_update(reaction: ReactionRequest, service: ReactionService 
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": str(e)})
 
 
-@router.delete("/delete/{reaction_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/delete/{reaction_id}", status_code=status.HTTP_200_OK)
 async def delete(reaction_id: str, service: ReactionService = Depends(reaction_service)):
     try:
         if service.delete_reaction(reaction_id):
