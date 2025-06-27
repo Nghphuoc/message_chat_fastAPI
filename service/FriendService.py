@@ -169,3 +169,19 @@ class FriendService:
         except Exception as e:
             print("ERROR UPDATE STATUS FRIEND SERVICE: " + str(e))
             raise HTTPException(status_code=500, detail={"message": e })
+
+
+    """
+    get all request add friend
+    @param: user_id : str
+    return FriendshipResponse
+    get_request_add_friend
+    """
+    def get_request_friend(self, user_id: str)->List[FriendResponse]:
+        try:
+            print("GET ALL FIEND AT FRIEND SERVICE")
+            friend_list = self.db.get_request_add_friend(user_id)
+            return [FriendResponse.from_orm(list) for list in friend_list]
+        except Exception as e:
+            print("ERROR GET ALL FRIEND SERVICE: " + str(e))
+            raise HTTPException(status_code=500, detail={"message": e})

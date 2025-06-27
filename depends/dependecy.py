@@ -17,6 +17,7 @@ from service.RoleService import RoleService
 from service.RoomService import RoomService
 from service.StatusService import StatusService
 from service.UserAndFriendCreateService import UserAndFriendCreateService
+from service.UserAndFriendService import UserAndFriendService
 from service.UserRoomService import UserRoomService
 from service.UserService import UserService
 
@@ -87,3 +88,14 @@ def message_service(db: Session = Depends(get_db)):
 def reaction_service(db: Session = Depends(get_db)):
     repo = ReactionRepository(db)
     return ReactionService(repo)
+
+def user_friend_service(db: Session = Depends(get_db)):
+    repo = StatusRepository(db)
+    status = StatusService(repo)
+    repo = RoleRepository(db)
+    role =  RoleService(repo)
+    user_repo = UserRepository(db)
+    user_service = UserService(user_repo, role, status)
+    friend = FriendRepository(db)
+    friend_service = FriendService(friend)
+    return UserAndFriendService(user_service, friend_service)

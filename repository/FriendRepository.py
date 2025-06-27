@@ -97,3 +97,15 @@ class FriendRepository:
         except Exception as e:
             print("ERROR GET FRIEND AT REPO: " + str(e))
             raise Exception("ERROR GET FRIEND AT REPO: " + str(e))
+
+
+    # get all request for user
+    def get_request_add_friend(self, user_id: str):
+        try:
+            data_friend = self.db.query(Friendship).filter(
+                Friendship.user_id == user_id
+            ).all()
+            return data_friend
+        except Exception as e:
+            print("ERROR GET FRIEND AT REPO: " + str(e))
+            raise Exception("ERROR GET FRIEND AT REPO: " + str(e))
