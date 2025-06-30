@@ -21,6 +21,82 @@ redis = RedisPubSub()
 
 # { room_id: set of websockets }
 connected_clients = {}
+# { user_id: websocket }
+user_status_sockets = {}
+
+@ws_router.websocket("/status/update/{user_id}")
+async def user_ws(websocket: WebSocket, user_id: str,
+                  status_service: StatusService = Depends(user_status_service),
+                  user_room_service: UserRoomService = Depends(user_room_service)):
+    await websocket.accept()
+
+    # Cập nhật status online
+    status_service.update_status(user_id=user_id, is_online=True)
+    user_status_sockets[user_id] = websocket  # Lưu WebSocket
+
+    try:
+        # Gửi thông báo status đến tất cả user trong các phòng chat chung
+        rooms = user_room_service.get_all_list_room_for_user(user_id)
+        notified_users = set()
+
+        for room in rooms:
+            room_id = room[0]
+            participants = user_room_service.get_user_id_by_room_id(room_id)
+            for participant in participants:
+                target_user_id = str(participant.user_id)
+                if target_user_id != user_id and target_user_id not in notified_users:
+                    notified_users.add(target_user_id)
+                    if target_user_id in user_status_sockets:
+                        status_payload = {
+                            "type": "status",
+                            "data": {
+                                "user_id": user_id,
+                                "is_online": True,
+                                "last_seen": str(to_vietnam_time(datetime.datetime.now()))
+                            }
+                        }
+                        await user_status_sockets[target_user_id].send_text(json.dumps(status_payload))
+
+        # Giữ kết nối mở
+        while True:
+            try:
+                await websocket.receive_text()  # Chờ nhận tin nhắn hoặc ngắt kết nối
+            except WebSocketDisconnect:
+                logger.info(f"User {user_id} disconnected unexpectedly")
+                break  # Ra khỏi vòng lặp khi WebSocketDisconnect
+
+            await asyncio.sleep(30)  # Có thể thêm delay trong khi kết nối mở
+
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
+    finally:
+        # Cập nhật offline và gửi thông báo
+        logger.info(f"User {user_id} offline")
+        status_service.update_status(user_id=user_id, is_online=False)
+        user_status_sockets.pop(user_id, None)
+
+        # Gửi thông báo offline đến các user liên quan
+        rooms = user_room_service.get_all_list_room_for_user(user_id)
+        notified_users = set()
+
+        for room in rooms:
+            room_id = room[0]
+            participants = user_room_service.get_user_id_by_room_id(room_id)
+            for participant in participants:
+                target_user_id = str(participant.user_id)
+                if target_user_id != user_id and target_user_id not in notified_users:
+                    notified_users.add(target_user_id)
+                    if target_user_id in user_status_sockets:
+                        status_payload = {
+                            "type": "status",
+                            "data": {
+                                "user_id": user_id,
+                                "is_online": False,
+                                "last_seen": str(to_vietnam_time(datetime.datetime.now()))
+                            }
+                        }
+                        await user_status_sockets[target_user_id].send_text(json.dumps(status_payload))
+
 
 @ws_router.websocket("/{room_id}/{user_id}")
 async def websocket_endpoint(websocket: WebSocket, room_id: str, user_id: str,
@@ -28,15 +104,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, user_id: str,
                              service_message: MessageService = Depends(message_service),
                              status_service: StatusService = Depends(user_status_service),
                              service_user: UserService = Depends(user_service)):
-
-    # set cache
-    user_cache = TTLCache(maxsize=500, ttl=300)  # save max 500 user, sống 5 minute
-    async def get_user_info(data) -> UserResponse:
-        if data in user_cache:
-            return user_cache[data]
-        data_user = service_user.get_user_by_id(data)
-        user_cache[data] = data_user
-        return data_user
 
     # step 1: connect websocket
     await websocket.accept()
@@ -104,7 +171,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, user_id: str,
                 # Nếu phòng không còn ai, hủy subscribe hoặc xóa key
                 connected_clients.pop(room_id, None)
 
-
     async def send_ws():
         try:
             while True:
@@ -131,17 +197,3 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, user_id: str,
                 connected_clients.pop(room_id, None)
 
     await asyncio.gather(receive_ws(), send_ws())
-
-
-@ws_router.websocket("/status/{user_id}")
-async def user_ws(websocket: WebSocket, user_id: str,
-                  status_service: StatusService = Depends(user_status_service)):
-    await websocket.accept()
-    print(f"[STATUS] Set user {user_id} online")  # DEBUG
-    status_service.update_status(user_id=user_id, is_online=True) # online
-    try:
-        while True:
-            # Giữ kết nối
-            await asyncio.sleep(30)
-    except WebSocketDisconnect:
-        status_service.update_status(user_id=user_id, is_online=False) # offline
