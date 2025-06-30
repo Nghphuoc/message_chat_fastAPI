@@ -156,6 +156,7 @@ class ReactionResponse(BaseModel):
 
 
 class UserInRoomResponse(BaseModel):
+    user_id: Optional[str]
     img_url: str
     username: str
     room_id: str
