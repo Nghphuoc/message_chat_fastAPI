@@ -37,6 +37,7 @@ async def get_all_room_of_user(user_id: str,
 
                     if user_info:  # đảm bảo tồn tại
                         result.append(UserInRoomResponse(
+                            user_id=user_info.user_id,
                             img_url=user_info.img_url,
                             username=name,
                             room_id=user_room.room_id,
