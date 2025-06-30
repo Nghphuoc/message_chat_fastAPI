@@ -72,10 +72,10 @@ class ReactionService:
     @param: reaction_id : str
     @return: True
     """
-    def delete_reaction(self, reaction_id: str):
+    def delete_reaction(self, reaction_id: str, user_id: str):
         try:
             print("DELETE REACTION AT ReactionService")
-            data = self.db.remove_reaction(reaction_id)
+            data = self.db.remove_reaction(reaction_id, user_id)
             return True
         except Exception as e:
             print("ERROR DELETE REACTION AT ReactionService: " + str(e))
