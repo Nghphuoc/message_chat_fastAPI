@@ -72,8 +72,9 @@ class StatusRepository:
                 status.last_seen = datetime.utcnow()
 
             self.db.commit()
-            self.db.close()
         except Exception as e:
             self.db.rollback()
             print("Error updating status" + str(e))
             raise Exception("Error updating status" + str(e))
+        finally:
+            self.db.close()
