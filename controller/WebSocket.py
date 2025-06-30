@@ -138,10 +138,10 @@ async def user_ws(websocket: WebSocket, user_id: str,
                   status_service: StatusService = Depends(user_status_service)):
     await websocket.accept()
     print(f"[STATUS] Set user {user_id} online")  # DEBUG
-    status_service.update_status(user_id, True) # online
+    status_service.update_status(user_id=user_id, is_online=True) # online
     try:
         while True:
             # Giữ kết nối
             await asyncio.sleep(30)
     except WebSocketDisconnect:
-        status_service.update_status(user_id, False) # offline
+        status_service.update_status(user_id=user_id, is_online=False) # offline
