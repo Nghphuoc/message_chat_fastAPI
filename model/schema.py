@@ -148,6 +148,7 @@ class ReactionRequest(BaseModel):
 
 class ReactionResponse(BaseModel):
     reaction_id: str
+    user_id: str
     message_id: str
     emoji: str
     created_at: Optional[datetime]
