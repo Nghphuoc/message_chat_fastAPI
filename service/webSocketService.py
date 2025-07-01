@@ -2,8 +2,8 @@ import datetime
 
 from cachetools import TTLCache
 
-from model.schema import MessageRequest, UserResponse
-from service import MessageService
+from model.schema import MessageRequest, UserResponse, ReactionRequest
+from service import MessageService, ReactionService
 from service.MessageService import to_vietnam_time
 from service.UserService import UserService
 
@@ -17,7 +17,12 @@ user_cache = TTLCache(maxsize=500, ttl=300)  # save max 500 user, sống 5 minut
 
 class WebsocketService:
 
-
+    """
+    save cache avoid request duplicate
+    @:param data : dict
+    @:param service_user : UserService
+    @return: UserResponse
+    """
     async def get_user_info(self, data, service_user: UserService) -> UserResponse:
         if data in user_cache:
             return user_cache[data]
@@ -25,7 +30,12 @@ class WebsocketService:
         user_cache[data] = data_user
         return data_user
 
-
+    """
+    send message logic and return data 
+    @:param data : dict
+    @:param service_message : MessageService
+    @:param service_user : UserService
+    """
     async def send_message(self, data, user_id, room_id, service_message: MessageService, service_user: UserService):
         data_send = MessageRequest(
         user=user_id,
@@ -64,3 +74,37 @@ class WebsocketService:
         }
         # step 3: send content
         return message_send
+
+
+    """
+    send reaction logic and return data 
+    @:param data : dict
+    @:param service_reaction: ReactionService
+    """
+    async def send_reaction(self, data, service_reaction: ReactionService):
+        print("MY DATA: ", data)
+        result = ReactionRequest(
+            user_id=data["user_id"],
+            message_id=data["message_id"],
+            emoji=data["emoji"],
+            created_at=to_vietnam_time(datetime.datetime.now())
+        )
+        try:
+            reaction = service_reaction.create_reaction_and_update(result)
+            reaction_payload = {
+                "type": "reaction",
+                "data": {
+                    "user_id": reaction.user_id,
+                    "message_id": reaction.message_id,
+                    "emoji": reaction.emoji,
+                }
+            }
+            return reaction_payload
+        except Exception as e:
+            error_payload = {
+                "type": "error",
+                "data": {
+                    "message": f"Lỗi xử lý reaction: {str(e)}"
+                }
+            }
+            return error_payload
