@@ -36,7 +36,8 @@ class ReactionService:
                     print("UPDATE REACTION: " + update.emoji + " REACTION: " + reaction.emoji)
                     update.emoji = reaction.emoji
                     update.created_at = reaction.created_at
-                    return self.db.insert_reaction(update)
+                    data = self.db.insert_reaction(update)
+                    return ReactionResponse.from_orm(data)
             else:
                 # step 2: create new reaction
                 print("CREATE REACTION AT ReactionService")
