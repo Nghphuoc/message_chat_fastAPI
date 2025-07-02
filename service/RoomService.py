@@ -73,9 +73,25 @@ class RoomService:
             room_old = self.get_room(room_id)
             if room_old is not None:
                 room_old.name = room.name
-                self.db.update_room(room_old)
+                self.db.create_room(room_old)
             return ChatRoomResponse.from_orm(room)
         except Exception as e:
             print("ERROR UPDATE CHAT ROOM AT ROOM SERVICE: " + str(e))
+            raise HTTPException(status_code=404, detail={"message": e})
+
+
+    """
+    update room action by room_id and action
+    @param: room_id : str
+    @param: room : ChatRoomRequest
+    @return: ChatRoomResponse 
+    """
+    def update_action_room(self,room_id: str, action: str) -> ChatRoomResponse:
+        try:
+            print("UPDATE CHAT ROOM ACTION AT ROOM SERVICE")
+            room = self.db.update_action(room_id, action)
+            return ChatRoomResponse.from_orm(room)
+        except Exception as e:
+            print("ERROR UPDATE CHAT ROOM ACTION AT ROOM SERVICE: " + str(e))
             raise HTTPException(status_code=404, detail={"message": e})
 
