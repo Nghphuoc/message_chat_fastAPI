@@ -73,6 +73,8 @@ class ChatRoomRequest(BaseModel):
     is_group: bool
     created_at: Optional[datetime]
     created_by: str
+    time_change: Optional[datetime]
+    action: Optional[str]
     class Config:
         orm_mode = True  # Dành cho Pydantic v1
 
@@ -83,6 +85,8 @@ class ChatRoomResponse(BaseModel):
     is_group: bool
     created_at: datetime
     created_by: Optional[str]
+    time_change: Optional[datetime]
+    action: Optional[str]
     class Config:
         orm_mode = True  # Dành cho Pydantic v1
 
@@ -163,6 +167,8 @@ class UserInRoomResponse(BaseModel):
     room_id: str
     status: bool
     last_seen: Optional[datetime]
+    action: Optional[str]
+    time_change: Optional[datetime]
     class Config:
         orm_mode = True
 
