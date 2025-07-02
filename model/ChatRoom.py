@@ -1,5 +1,7 @@
 import datetime as datetime
 import uuid
+from email.policy import default
+
 from sqlalchemy import String, Column, DateTime, Boolean
 from sqlalchemy.orm import relationship
 
@@ -14,7 +16,6 @@ class ChatRoom(Base):
     is_group = Column(Boolean, nullable=False, default=False) # check group
     created_at = Column(DateTime, default = datetime.datetime.now(), nullable=False)
     created_by = Column(String(36))
-
-    # time_change = Column(DateTime, default = datetime.datetime.now(), nullable=False)
-    # action = Column(String(255))
+    time_change = Column(DateTime, default = datetime.datetime.now(), nullable=False)
+    action = Column(String(255), default="none")
     messages = relationship("Message", back_populates="room")  # đổi tên thuộc tính thành "messages"
