@@ -1,12 +1,12 @@
 import datetime
 import json
-from cachetools import TTLCache
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, HTTPException
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
 import asyncio
-from model.schema import MessageRequest, UserResponse, UserInRoomResponse
+from model.schema import MessageRequest, UserResponse, UserInRoomResponse, ReactionRequest
 from redis.redis_manager import RedisPubSub
-from depends.dependecy import user_status_service, message_service, user_service, user_room_service, reaction_service
-from service import StatusService, MessageService, UserRoomService, ReactionService
+from depends.dependecy import user_status_service, message_service, user_service, user_room_service, reaction_service, \
+    room_service
+from service import StatusService, MessageService, UserRoomService, ReactionService, RoomService
 import logging
 from service.webSocketService import WebsocketService
 
@@ -103,7 +103,8 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, user_id: str,
                              service_reaction: ReactionService = Depends(reaction_service),
                              service_message: MessageService = Depends(message_service),
                              status_service: StatusService = Depends(user_status_service),
-                             service_user: UserService = Depends(user_service)):
+                             service_user: UserService = Depends(user_service),
+                             service_room: RoomService = Depends(room_service)):
 
     # step 1: connect websocket
     await websocket.accept()
@@ -128,7 +129,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, user_id: str,
 
                 if type == "message":
                     try:
-                        message = await ws_service.send_message(data, user_id, room_id, service_message, service_user)
+                        message = await ws_service.send_message(data, user_id, room_id, service_message, service_user, service_room)
                         await redis.publish(room_id, json.dumps(message))
                     except Exception as e:
                         error_payload = {
@@ -141,17 +142,10 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, user_id: str,
 
                 elif type == "reaction":
                     try:
-                        # user_id: str
-                        #     message_id: str
-                        #     emoji: str
-                        #     created_at: Optional[datetime]
-                        reaction = await service_reaction.create_reaction_and_update(data)
-                        reaction_payload = {
-                            "type": "reaction",
-                            "data": reaction
-                        }
-                        await redis.publish(room_id,json.dumps(reaction_payload))
+                        reaction_payload = await ws_service.send_reaction(data, service_reaction)
+                        # await redis.publish(room_id, json.dumps(reaction_payload))
                     except Exception as e:
+                        print("ERROR CREATE REACTION AT ReactionService: ", e)
                         error_payload = {
                             "type": "error",
                             "data": {
@@ -159,7 +153,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, user_id: str,
                             }
                         }
                         await websocket.send_text(json.dumps(error_payload))
-                        continue
 
         except WebSocketDisconnect:
             pass

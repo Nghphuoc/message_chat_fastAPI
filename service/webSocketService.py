@@ -3,7 +3,7 @@ import datetime
 from cachetools import TTLCache
 
 from model.schema import MessageRequest, UserResponse, ReactionRequest
-from service import MessageService, ReactionService
+from service import MessageService, ReactionService, RoomService
 from service.MessageService import to_vietnam_time
 from service.UserService import UserService
 
@@ -36,7 +36,7 @@ class WebsocketService:
     @:param service_message : MessageService
     @:param service_user : UserService
     """
-    async def send_message(self, data, user_id, room_id, service_message: MessageService, service_user: UserService):
+    async def send_message(self, data, user_id, room_id, service_message: MessageService, service_user: UserService, service_room: RoomService):
         data_send = MessageRequest(
         user=user_id,
         room=room_id,
@@ -73,6 +73,9 @@ class WebsocketService:
             "created_at": str(to_vietnam_time(data_send.created_at).isoformat())}
         }
         # step 3: send content
+        action = f"{name_user}: {data_send.content}"
+        service_room.update_action_room(room_id, action)
+
         return message_send
 
 

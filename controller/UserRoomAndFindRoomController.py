@@ -14,10 +14,11 @@ router = APIRouter(prefix="/api/room/user", tags=["GetRoomForUser"])
 async def get_all_room_of_user(user_id: str,
                                service_user_room: UserRoomService = Depends(user_room_service),
                                user_service: UserService = Depends(user_service),
-                               user_status: StatusService = Depends(user_status_service)):
+                               user_status: StatusService = Depends(user_status_service),
+                               service_room: RoomService = Depends(room_service)):
 
     try:
-        room_ids = service_user_room.get_all_list_room_for_user(user_id)  # List of (room_id,)
+        room_ids = service_user_room.get_all_list_room_for_user(user_id)  # List of (room_id)
         result = []
         name =""
         for room_tuple in room_ids:
@@ -29,6 +30,10 @@ async def get_all_room_of_user(user_id: str,
                     user_info = user_service.get_user_by_id(user_room.user_id)
                     # get status from user show with chat room call service
                     status_user = user_status.get_status_by_user(user_info.user_id)
+
+                    # get chatroom by (user_room.room_id)
+                    # check if none ( default )
+                    room = service_room.get_room(user_room.room_id)
 
                     if user_info.display_name:
                         name = user_info.display_name
@@ -43,6 +48,8 @@ async def get_all_room_of_user(user_id: str,
                             room_id=user_room.room_id,
                             status=status_user.is_online,
                             last_seen=to_vietnam_time(status_user.last_seen),
+                            action= room.action,
+                            time_change= room.time_change
                         ))
 
         return result
