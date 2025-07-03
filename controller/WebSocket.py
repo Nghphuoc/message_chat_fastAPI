@@ -2,6 +2,9 @@ import datetime
 import json
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
 import asyncio
+
+from starlette.websockets import WebSocketState
+
 from model.schema import MessageRequest, UserResponse, UserInRoomResponse, ReactionRequest
 from redis.redis_manager import RedisPubSub
 from depends.dependecy import user_status_service, message_service, user_service, user_room_service, reaction_service, \
@@ -142,8 +145,8 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, user_id: str,
 
                 elif type == "reaction":
                     try:
-                        reaction_payload = await ws_service.send_reaction(data, service_reaction)
-                        # await redis.publish(room_id, json.dumps(reaction_payload))
+                        reaction_payload = await ws_service.send_reaction(data, room_id, service_reaction, service_room, service_user)
+                        await redis.publish(room_id, json.dumps(reaction_payload))
                     except Exception as e:
                         print("ERROR CREATE REACTION AT ReactionService: ", e)
                         error_payload = {
@@ -173,18 +176,26 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, user_id: str,
                         payload = json.loads(message["data"])
                         sender_id = payload.get("data", {}).get("user_id")
 
-                        # Gửi message đến các client khác trong phòng
+                        dead_clients = set()
+
                         for client in connected_clients.get(room_id, []):
-                            if hasattr(client, "user_id") and client.user_id == sender_id:
-                                continue  # next user send message
-                            if client.client_state.value == 1:  # CONNECTED
-                                await client.send_text(message['data'])
+                            try:
+                                if hasattr(client, "user_id") and client.user_id == sender_id:
+                                    continue
+                                if client.application_state == WebSocketState.CONNECTED:
+                                    await client.send_text(message['data'])
+                            except Exception as e:
+                                logger.warning(f"⚠️ Client send error, removing client: {e}")
+                                dead_clients.add(client)
+
+                        # Cleanup dead connections
+                        for dead in dead_clients:
+                            connected_clients[room_id].discard(dead)
 
                     except Exception as e:
                         logger.error(f"Error processing Redis message: {e}")
 
         except WebSocketDisconnect:
-            # Nếu send_ws bị disconnect, cũng xóa client
             connected_clients[room_id].discard(websocket)
             if not connected_clients[room_id]:
                 connected_clients.pop(room_id, None)
