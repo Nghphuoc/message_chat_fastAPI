@@ -13,7 +13,15 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"  # Có thể đổi sang PostgreSQL, MySQL...
 
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(
+    DATABASE_URL,
+    echo=True,
+    pool_size=10,        # số kết nối mặc định trong pool
+    max_overflow=20,     # số kết nối vượt quá pool_size
+    pool_timeout=30,     # thời gian chờ nếu pool đầy
+    pool_pre_ping=True   # kiểm tra kết nối sống trước khi dùng
+)
+
 SessionLocal = sessionmaker(bind=engine)
 
 Base = declarative_base()
