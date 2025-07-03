@@ -76,5 +76,3 @@ class StatusRepository:
             self.db.rollback()
             print("Error updating status" + str(e))
             raise Exception("Error updating status" + str(e))
-        finally:
-            self.db.close()
