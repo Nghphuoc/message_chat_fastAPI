@@ -36,7 +36,8 @@ class WebsocketService:
     @:param service_message : MessageService
     @:param service_user : UserService
     """
-    async def send_message(self, data, user_id, room_id, service_message: MessageService, service_user: UserService, service_room: RoomService):
+    async def send_message(self, data, user_id, room_id, service_message: MessageService,
+                           service_user: UserService, service_room: RoomService):
         data_send = MessageRequest(
         user=user_id,
         room=room_id,
@@ -84,7 +85,10 @@ class WebsocketService:
     @:param data : dict
     @:param service_reaction: ReactionService
     """
-    async def send_reaction(self, data, service_reaction: ReactionService):
+    async def send_reaction(self, data, room_id,
+                            service_reaction: ReactionService,
+                            service_room: RoomService,
+                            service_user: UserService):
         print("MY DATA: ", data)
         result = ReactionRequest(
             user_id=data["user_id"],
@@ -94,9 +98,21 @@ class WebsocketService:
         )
         try:
             reaction = service_reaction.create_reaction_and_update(result)
+
+            data_user = await self.get_user_info(reaction.user_id, service_user)
+            if data_user.display_name is None:
+                name_user = data_user.username
+            else:
+                name_user = data_user.display_name
+
+            action = f"{name_user}: send reacted {reaction.emoji}"
+
+            service_room.update_action_room(room_id, action)
+
             reaction_payload = {
                 "type": "reaction",
                 "data": {
+                    "reaction_id": reaction.reaction_id,
                     "user_id": reaction.user_id,
                     "message_id": reaction.message_id,
                     "emoji": reaction.emoji,
