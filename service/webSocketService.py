@@ -127,3 +127,26 @@ class WebsocketService:
                 }
             }
             return error_payload
+
+
+    async def cancel_reaction(self, data, user_id, service_reaction: ReactionService):
+        try:
+            service_reaction.delete_reaction(data["reaction_id"], user_id)
+            reaction_payload = {
+                "type": "cancel_reaction",
+                "data": {
+                    "reaction_id": data["reaction_id"],
+                    "user_id": user_id,
+                    "message_id": data["message_id"],
+                    "emoji": data["emoji"],
+                }
+            }
+            return reaction_payload
+        except Exception as e:
+            error_payload = {
+                "type": "error",
+                "data": {
+                    "message": f"error cancelling reaction {str(e)}",
+                }
+            }
+            return error_payload

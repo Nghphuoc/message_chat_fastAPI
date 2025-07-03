@@ -138,7 +138,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, user_id: str,
                         error_payload = {
                             "type": "error",
                             "data": {
-                                "message": f"Lỗi xử lý message: {str(e)}"
+                                "message": {str(e)}
                             }
                         }
                         await websocket.send_text(json.dumps(error_payload))
@@ -152,7 +152,21 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, user_id: str,
                         error_payload = {
                             "type": "error",
                             "data": {
-                                "message": f"Lỗi xử lý reaction: {str(e)}"
+                                "message": {str(e)}
+                            }
+                        }
+                        await websocket.send_text(json.dumps(error_payload))
+
+                elif type == "cancel_reaction":
+                    try:
+                        cancel_reaction = await ws_service.cancel_reaction(data, user_id, service_reaction)
+                        await redis.publish(room_id, json.dumps(cancel_reaction))
+                    except Exception as e:
+                        print("ERROR CANCEL REACTION AT ReactionService: ", e)
+                        error_payload = {
+                            "type": "error",
+                            "data": {
+                                "message": {str(e)}
                             }
                         }
                         await websocket.send_text(json.dumps(error_payload))
