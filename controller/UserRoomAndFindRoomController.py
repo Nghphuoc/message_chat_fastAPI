@@ -51,7 +51,7 @@ async def get_all_room_of_user(user_id: str,
                             action= room.action,
                             time_change= room.time_change
                         ))
-
+        result.sort(key=lambda x: x.time_change, reverse=True)
         return result
 
     except Exception as e:
