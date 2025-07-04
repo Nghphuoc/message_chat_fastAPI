@@ -1,8 +1,9 @@
 import aioredis
+import os
+from dotenv import load_dotenv
+# REDIS_URL = "redis://localhost:6379"
 
-from model.schema import MessageRequest
-
-REDIS_URL = "redis://localhost:6379"
+load_dotenv()
 
 class RedisPubSub:
 
@@ -12,7 +13,7 @@ class RedisPubSub:
 
 
     async def connect(self):
-        self.redis = await aioredis.from_url(REDIS_URL, decode_responses=True)
+        self.redis = await aioredis.from_url(os.getenv("REDIS_URL"), decode_responses=True)
 
 
     async def subscribe(self, channel: str):
