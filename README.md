@@ -264,3 +264,102 @@ socket.onmessage = (e) => {
   if (type === "typing") showTyping(data.user_id);
 };
 
+
+from fastapi import WebSocket, WebSocketDisconnect, APIRouter
+from typing import Dict, Set
+import json
+import asyncio
+from redis_client import redis  # giả định đã setup aioredis
+from services import save_to_db, save_reaction, broadcast  # các service DB
+from connection_manager import register, unregister, connected_clients
+
+router = APIRouter()
+
+@router.websocket("/ws/{room_id}/{user_id}")
+async def chat_ws(ws: WebSocket, room_id: str, user_id: str):
+    await ws.accept()
+
+    # Gắn user_id vào websocket để phân biệt
+    ws.user_id = user_id
+
+    # Đăng ký kết nối
+    register(ws, room_id, user_id)
+
+    # Subscribe redis kênh riêng của phòng
+    pubsub = await redis.subscribe(f"room:{room_id}")
+
+    async def receive_ws():
+        try:
+            while True:
+                raw = await ws.receive_text()
+                payload = json.loads(raw)
+
+                type_ = payload["type"]
+                data = payload["data"]
+
+                if type_ == "send_message":
+                    save_to_db(data)
+                    await redis.publish(f"room:{room_id}", json.dumps(payload))
+
+                elif type_ == "reaction":
+                    save_reaction(data)
+                    await redis.publish(f"room:{room_id}", json.dumps(payload))
+
+                elif type_ == "typing":
+                    # Không cần Redis, chỉ broadcast tới các client trong phòng
+                    await broadcast(room_id, payload, exclude_user_id=user_id)
+
+        except WebSocketDisconnect:
+            await handle_disconnect(ws, room_id)
+
+    async def send_ws():
+        try:
+            while True:
+                message = await pubsub.get_message(ignore_subscribe_messages=True, timeout=1)
+                if message:
+                    payload = json.loads(message["data"])
+                    sender_id = payload.get("user_id")
+
+                    for client in connected_clients.get(room_id, set()):
+                        if getattr(client, "user_id", None) == sender_id:
+                            continue
+                        if client.client_state.value == 1:
+                            await client.send_text(message["data"])
+
+        except Exception as e:
+            print(f"[send_ws] Error: {e}")
+            await handle_disconnect(ws, room_id)
+
+    await asyncio.gather(receive_ws(), send_ws())
+
+
+
+
+# connection_manager.py
+from typing import Dict, Set
+from fastapi import WebSocket
+
+# room_id: Set[WebSocket]
+connected_clients: Dict[str, Set[WebSocket]] = {}
+
+def register(ws: WebSocket, room_id: str, user_id: str):
+    ws.user_id = user_id  # Gắn user_id vào ws
+    if room_id not in connected_clients:
+        connected_clients[room_id] = set()
+    connected_clients[room_id].add(ws)
+
+async def unregister(ws: WebSocket, room_id: str):
+    clients = connected_clients.get(room_id, set())
+    clients.discard(ws)
+    if not clients:
+        connected_clients.pop(room_id, None)
+
+async def broadcast(room_id: str, payload: dict, exclude_user_id: str = None):
+    message = json.dumps(payload)
+    for ws in connected_clients.get(room_id, set()):
+        if getattr(ws, "user_id", None) != exclude_user_id:
+            try:
+                if ws.client_state.value == 1:
+                    await ws.send_text(message)
+            except:
+                await unregister(ws, room_id)
