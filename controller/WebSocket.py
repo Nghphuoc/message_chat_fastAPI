@@ -6,7 +6,7 @@ import asyncio
 from starlette.websockets import WebSocketState
 
 from model.schema import MessageRequest, UserResponse, UserInRoomResponse, ReactionRequest
-from redis.redis_manager import RedisPubSub
+from redis_client.redis_manager import RedisPubSub
 from depends.dependecy import user_status_service, message_service, user_service, user_room_service, reaction_service, \
     room_service
 from service import StatusService, MessageService, UserRoomService, ReactionService, RoomService
@@ -119,7 +119,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, user_id: str,
     pubsub = await redis.subscribe(room_id)
     print("LOG PUBSUB: ", pubsub)
 
-    # call redis websocket
+    # call redis_client websocket
     async def receive_ws():
         try:
             ws_service = WebsocketService()

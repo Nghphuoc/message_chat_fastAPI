@@ -3,7 +3,7 @@ from controller.RoleController import router as role_router
 from controller.UserController import router as user_router
 from starlette.middleware.cors import CORSMiddleware
 from dbconfig.config import Base, engine
-from controller.WebSocket import redis  # chỉ import redis
+from controller.WebSocket import redis  # chỉ import redis_client
 from controller.WebSocket import ws_router
 from controller.RoomController import router as room_router
 from controller.UserRoomController import router as user_room_router
