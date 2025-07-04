@@ -4,10 +4,10 @@ from depends.dependecy import user_and_friend_service
 from model.Friendship import TypeStatus
 from service.UserAndFriendCreateService import UserAndFriendCreateService
 
-router = APIRouter = APIRouter(prefix="/add_friend", tags=["Add Friend"])
+router = APIRouter(prefix="/api/add_friend", tags=["Add Friend"])
 
 
-@router.post("/add_friend/{friend_id}", status_code=status.HTTP_201_CREATED)
+@router.post("/create/{user_id}/{friend_id}", status_code=status.HTTP_201_CREATED)
 async def insert_friend(user_id: str,
                         friend_id: str,
                         service: UserAndFriendCreateService =
