@@ -4,6 +4,7 @@ from fastapi import HTTPException
 
 from model import ChatRoom, Friendship
 from model.Friendship import TypeStatus
+from repository import UserAndFriendRepository
 from service import FriendService
 from service.RoomService import RoomService
 from service.UserRoomService import UserRoomService
@@ -16,10 +17,13 @@ from service.UserRoomService import UserRoomService
 
 class UserAndFriendCreateService:
 
-    def __init__(self, chat_room: RoomService, user_room: UserRoomService ,friend: FriendService):
+    def __init__(self, chat_room: RoomService,
+                 user_room: UserRoomService,
+                 friend: FriendService, repo: UserAndFriendRepository ):
         self.chat_room = chat_room
         self.user_room = user_room
         self.friend = friend
+        self.repo = repo
 
     """
     create friendship logic create ( room and update status friend )
@@ -129,3 +133,33 @@ class UserAndFriendCreateService:
 
     # # get list chat for user ( show img friend )
     # def get_list_user(self, ):
+
+
+    """
+    get list friend ( search input )
+    @:param user_search_id : str
+    @:param search_name: str
+    @:return list
+    """
+    def search_user(self, user_search_id: str, search_name: str) -> list[dict]:
+        try:
+            print("SEARCH USER AT UserAndFriendCreateService")
+            data_user = self.repo.search_users_with_status(user_search_id, search_name)
+            return [self.serialize_user_result(row) for row in data_user]
+        except Exception as e:
+            print("ERROR SEARCH USER AT UserAndFriendCreateService: " + str(e))
+            raise HTTPException(status_code=400,detail={"message": e})
+
+
+    """
+    parse to json 
+    @:param row: str
+    @:return dict
+    """
+    def serialize_user_result(self, row):
+        return {
+            "user_id": row.user_id,
+            "display_name": row.display_name,
+            "img_url": row.img_url,
+            "friendship_status": row.friendship_status
+        }

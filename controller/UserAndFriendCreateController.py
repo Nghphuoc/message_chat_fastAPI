@@ -38,3 +38,12 @@ async def update_status_reject(user_id: str, friend_id: str ,status: TypeStatus,
         return {"message": f" reject friend request success {status}"}
     except Exception as e:
         raise HTTPException(status_code=400, detail={"message": str(e)})
+
+
+@router.get("/search_user/{user_search_id}/{search_name}", status_code=status.HTTP_200_OK, response_model=list[dict])
+async def search_users(user_search_id: str, search_name: str,
+                       service: UserAndFriendCreateService = Depends(user_and_friend_service)):
+    try:
+        return service.search_user(user_search_id, search_name)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail={"message": str(e)})

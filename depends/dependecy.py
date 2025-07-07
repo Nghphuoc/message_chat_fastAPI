@@ -8,6 +8,7 @@ from repository.ReactionRepository import ReactionRepository
 from repository.RoleRepository import RoleRepository
 from repository.RoomRepository import RoomRepository
 from repository.StatusRepository import StatusRepository
+from repository.UserAndFriendRepository import UserAndFriendRepository
 from repository.UserRepository import UserRepository
 from repository.UserRoomRepository import UserRoomRepository
 from service.FriendService import FriendService
@@ -73,8 +74,9 @@ def user_and_friend_service(db: Session = Depends(get_db)):
     user_room_service = UserRoomService(user_room_repo)  # Important fix here
     friend = FriendRepository(db)
     friend_service = FriendService(friend)
+    repo = UserAndFriendRepository(db)
 
-    return UserAndFriendCreateService(chat_room_service, user_room_service, friend_service)
+    return UserAndFriendCreateService(chat_room_service, user_room_service, friend_service, repo)
 
 
 # message service
