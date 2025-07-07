@@ -24,7 +24,7 @@ class UserAndFriendRepository:
             .filter(
                 or_(
                     FriendAlias.user_id == current_user_id,
-                    FriendAlias.friend_id == current_user_id
+                    # FriendAlias.friend_id == current_user_id
                 )
             )
             .subquery()

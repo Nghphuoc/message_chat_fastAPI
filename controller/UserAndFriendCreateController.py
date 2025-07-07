@@ -19,7 +19,7 @@ async def insert_friend(user_id: str,
         raise HTTPException(status_code=400, detail={"message": str(e)})
 
 
-@router.put("/update_status/{friend_id}", status_code=status.HTTP_200_OK)
+@router.put("/accept/{user_id}/{friend_id}", status_code=status.HTTP_200_OK)
 async def update_status_accept(user_id: str, friend_id: str ,status: TypeStatus,
                         service: UserAndFriendCreateService =
                         Depends(user_and_friend_service)):
@@ -30,7 +30,7 @@ async def update_status_accept(user_id: str, friend_id: str ,status: TypeStatus,
         raise HTTPException(status_code=400, detail={"message": str(e)})
 
 
-@router.put("/update_reject/{friend_id}", status_code=status.HTTP_200_OK)
+@router.put("/reject/{user_id}/{friend_id}", status_code=status.HTTP_200_OK)
 async def update_status_reject(user_id: str, friend_id: str ,status: TypeStatus,
                                service: UserAndFriendCreateService = Depends(user_and_friend_service)):
     try:
