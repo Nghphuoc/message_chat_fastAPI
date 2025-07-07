@@ -1,8 +1,6 @@
 import aioredis
 import os
 from dotenv import load_dotenv
-# REDIS_URL = "redis_client://localhost:6379"
-
 load_dotenv()
 
 class RedisPubSub:
@@ -13,7 +11,7 @@ class RedisPubSub:
 
 
     async def connect(self):
-        self.redis = await aioredis.from_url(os.getenv("REDIS_URL"), decode_responses=True)
+        self.redis = await aioredis.from_url(os.getenv("REDIS_URL"), decode_responses=True)  #
 
 
     async def subscribe(self, channel: str):

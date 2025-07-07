@@ -11,9 +11,9 @@ DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 
-#DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"  # Có thể đổi sang PostgreSQL, MySQL...
+DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"  # Có thể đổi sang PostgreSQL, MySQL...
 
-DATABASE_URL = "mysql+pymysql://root:QKddluOjJFunHBUFoAoSZSIJJCoBVtsv@nozomi.proxy.rlwy.net:30138/railway"
+# DATABASE_URL = "mysql+pymysql://root:QKddluOjJFunHBUFoAoSZSIJJCoBVtsv@nozomi.proxy.rlwy.net:30138/railway"
 
 engine = create_engine(
     DATABASE_URL,
