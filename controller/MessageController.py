@@ -31,3 +31,11 @@ async def get_message(room_id: str, service: MessageService = Depends(message_se
     except Exception as e:
         raise HTTPException(status_code=500, detail={"message": str(e)})
 
+
+@router.delete("/delete/{message_id}", status_code=status.HTTP_200_OK)
+async def delete_message(message_id: str, service: MessageService = Depends(message_service)):
+    try:
+        service.delete_message(message_id)
+        return {"message": "Message deleted"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail={"message": str(e)})

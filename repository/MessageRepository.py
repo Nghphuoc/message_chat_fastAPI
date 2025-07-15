@@ -46,3 +46,15 @@ class MessageRepository:
             return messages
         except Exception as e:
             raise Exception("ERROR GET MESSAGE", str(e))
+
+
+    def delete_message_by_id(self, message_id: str):
+        try:
+            message = self.db.query(Message).filter(Message.message_id == message_id).first()
+            if not message:
+                raise Exception("Message not found")
+            self.db.delete(message)
+            self.db.commit()
+        except Exception as e:
+            self.db.rollback()
+            raise Exception("ERROR DELETE MESSAGE", str(e))

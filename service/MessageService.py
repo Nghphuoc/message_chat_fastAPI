@@ -93,6 +93,16 @@ class MessageService:
             print("ERROR GET ALL MESSAGE FROM ROOM AT MessageService: " + str(e))
             raise HTTPException(status_code=500, detail="ERROR ALL MESSAGE FROM ROOM AT MessageService: " + str(e))
 
+
+    def delete_message(self, message_id: str):
+        try:
+            print("DELETE MESSAGE AT MessageService")
+            return self.db.delete_message_by_id(message_id)
+        except Exception as e:
+            print("ERROR DELETE MESSAGE AT MessageService: " + str(e))
+            raise HTTPException(status_code=500, detail="message: " + str(e))
+
+
 """
 parse time global to vietnam_time GMT +7
 @param: utc_dt : datetime

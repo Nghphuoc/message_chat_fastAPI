@@ -10,7 +10,7 @@ class Reaction(Base):
 
     reaction_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     user_id = Column(String(36), ForeignKey('TB_USERS.user_id'), nullable=False)
-    message_id = Column(String(36), ForeignKey('TB_MESSAGES.message_id'), nullable=False)
+    message_id = Column(String(36), ForeignKey('TB_MESSAGES.message_id', ondelete="CASCADE"), nullable=False)
     emoji = Column(String(10), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
