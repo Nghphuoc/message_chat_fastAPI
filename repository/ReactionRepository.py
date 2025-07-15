@@ -1,8 +1,5 @@
-from fastapi import HTTPException
-from sqlalchemy import false
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
-
 from model import Reaction
 
 

@@ -4,8 +4,7 @@ from datetime import datetime
 from sqlalchemy import Column, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from dbconfig.config import Base
-from sqlalchemy.types import Enum as SqlEnum  # đổi tên để tránh nhầm với Python Enum
-
+from sqlalchemy.types import Enum as SqlEnum
 
 class TypeFlag(enum.Enum):
     NOT_ACTIVE = 0

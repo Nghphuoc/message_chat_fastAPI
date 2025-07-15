@@ -183,3 +183,7 @@ class LoginRequest(BaseModel):
 class TokenData(BaseModel):
     username: Optional[str] = None
     role: Optional[str] = None
+
+
+class StatusRequest(BaseModel):
+    status: TypeStatus

@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends
 from starlette import status
 from depends.dependecy import user_room_service, room_service, message_service, user_service, user_status_service
-from model.schema import ChatRoomResponse, MessageResponse, UserRoomResponse, UserInRoomResponse
+from model.schema import UserInRoomResponse
 from service import UserRoomService, RoomService, MessageService, UserService, StatusService
 from service.MessageService import to_vietnam_time
 

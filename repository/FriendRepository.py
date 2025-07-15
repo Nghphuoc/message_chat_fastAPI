@@ -1,6 +1,5 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-
 from model import Friendship
 from model.Friendship import TypeStatus
 from model.schema import FriendRequest

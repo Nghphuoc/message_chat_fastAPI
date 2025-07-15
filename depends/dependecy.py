@@ -1,6 +1,5 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
-
 from dbconfig.config import get_db
 from repository.FriendRepository import FriendRepository
 from repository.MessageRepository import MessageRepository

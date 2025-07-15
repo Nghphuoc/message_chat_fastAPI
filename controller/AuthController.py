@@ -7,7 +7,6 @@ from model.schema import LoginRequest, TokenData, UserRequest, UserResponse
 from service.UserService import UserService
 from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer
-from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from dotenv import load_dotenv
 import os
 load_dotenv()

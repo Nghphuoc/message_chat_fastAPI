@@ -1,7 +1,5 @@
 from datetime import datetime
-
 from fastapi import HTTPException
-
 from model import UserStatus
 from model.Role import RoleType
 from model.User import Users
@@ -246,5 +244,3 @@ class UserService:
         if self.db.get_user_by_phone(phone):
             print("Error PHONE ALREADY IN TABLE TB_USERS")
             raise Exception("Error PHONE ALREADY IN TABLE TB_USERS")
-
-

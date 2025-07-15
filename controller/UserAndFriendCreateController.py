@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Body
 from starlette import status
 from depends.dependecy import user_and_friend_service
-from model.Friendship import TypeStatus
+from model.schema import StatusRequest
 from service.UserAndFriendCreateService import UserAndFriendCreateService
 
 router = APIRouter(prefix="/api/add_friend", tags=["Add Friend"])
@@ -20,7 +20,7 @@ async def insert_friend(user_id: str,
 
 
 @router.put("/accept/{user_id}/{friend_id}", status_code=status.HTTP_200_OK)
-async def update_status_accept(user_id: str, friend_id: str ,status: TypeStatus,
+async def update_status_accept(user_id: str, friend_id: str ,status: StatusRequest = Body(...),
                         service: UserAndFriendCreateService =
                         Depends(user_and_friend_service)):
     try:
@@ -31,7 +31,7 @@ async def update_status_accept(user_id: str, friend_id: str ,status: TypeStatus,
 
 
 @router.put("/reject/{user_id}/{friend_id}", status_code=status.HTTP_200_OK)
-async def update_status_reject(user_id: str, friend_id: str ,status: TypeStatus,
+async def update_status_reject(user_id: str, friend_id: str ,status: StatusRequest = Body(...),
                                service: UserAndFriendCreateService = Depends(user_and_friend_service)):
     try:
         service.update_status_reject_friend(user_id, friend_id,status)

@@ -1,7 +1,6 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
-
 from depends.dependecy import user_room_service
 from model.schema import UserRoomResponse
 from service import UserRoomService

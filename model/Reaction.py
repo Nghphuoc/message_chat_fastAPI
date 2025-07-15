@@ -4,6 +4,7 @@ from sqlalchemy import Column, ForeignKey, DateTime, String, UniqueConstraint
 from sqlalchemy.orm import relationship
 from dbconfig.config import Base
 
+
 class Reaction(Base):
     __tablename__ = 'TB_REACTION'
 

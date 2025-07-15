@@ -1,7 +1,6 @@
 import enum
 import uuid
 from datetime import datetime
-
 from sqlalchemy import Column, String, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import Enum as SqlEnum  # đổi tên để tránh nhầm với Python Enum

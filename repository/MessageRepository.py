@@ -1,6 +1,5 @@
 from sqlalchemy import desc, asc
 from sqlalchemy.orm import Session
-
 from model import Message
 
 
@@ -33,12 +32,17 @@ class MessageRepository:
 
     def get_message_from_room_id(self, room_id: str):
         try:
+            skip: int = 0
+            limit: int = 20
             messages = (
                 self.db.query(Message)
                 .filter(Message.room_id == room_id)
-                .order_by(asc(Message.created_at))
+                .order_by(desc(Message.created_at))
+                .offset(skip)
+                .limit(limit)
                 .all()
             )
+            messages.reverse()
             return messages
         except Exception as e:
             raise Exception("ERROR GET MESSAGE", str(e))

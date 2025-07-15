@@ -4,6 +4,7 @@ from fastapi import HTTPException
 
 from model import ChatRoom, Friendship
 from model.Friendship import TypeStatus
+from model.schema import StatusRequest
 from repository import UserAndFriendRepository
 from service import FriendService
 from service.RoomService import RoomService
@@ -84,10 +85,10 @@ class UserAndFriendCreateService:
     @:param friend_id : str
     @:param status : TypeStatus
     """
-    def update_status_accept_friend(self, user_id: str, friend_id: str, status: TypeStatus):
+    def update_status_accept_friend(self, user_id: str, friend_id: str, status: StatusRequest):
         try:
             print("UPDATE STATUS FRIEND AT UserAndFriendCreateService")
-            self.friend.update_relationship_status(user_id, friend_id, status)
+            self.friend.update_relationship_status(user_id, friend_id, status.status)
         except Exception as e:
             print("ERROR UPDATE FRIEND AT UserAndFriendCreateService: " + str(e))
             raise HTTPException(status_code=400, detail={"message": e})
@@ -99,10 +100,10 @@ class UserAndFriendCreateService:
     @:param friend_id : str
     @:param status : TypeStatus
     """
-    def update_status_reject_friend(self, user_id: str, friend_id: str, status: TypeStatus):
+    def update_status_reject_friend(self, user_id: str, friend_id: str, status: StatusRequest):
         try:
             print("UPDATE REJECT STATUS FRIEND AT UserAndFriendCreateService")
-            self.friend.update_reject_status(user_id, friend_id, status)
+            self.friend.update_reject_status(user_id, friend_id, status.status)
         except Exception as e:
             print("ERROR UPDATE FRIEND AT UserAndFriendCreateService: " + str(e))
             raise HTTPException(status_code=400,

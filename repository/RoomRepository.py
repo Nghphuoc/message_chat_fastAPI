@@ -1,7 +1,6 @@
 import datetime as datetime
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
-
 from model import ChatRoom
 
 

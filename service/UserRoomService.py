@@ -1,5 +1,4 @@
 from fastapi import HTTPException
-
 from model import UserRoom
 from model.schema import UserRoomResponse
 from repository import UserRoomRepository

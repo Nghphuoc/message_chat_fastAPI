@@ -1,8 +1,6 @@
 from typing import List
-
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
-
 from depends.dependecy import message_service
 from model.schema import MessageResponse, MessageRequest
 from service import MessageService

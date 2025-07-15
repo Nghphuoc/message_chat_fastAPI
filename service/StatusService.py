@@ -1,5 +1,4 @@
 from fastapi import HTTPException
-
 from model import UserStatus
 from model.schema import UserStatusResponse
 from repository.StatusRepository import StatusRepository

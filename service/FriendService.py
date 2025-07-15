@@ -1,7 +1,5 @@
 from typing import List
-
 from fastapi import HTTPException
-
 from model import Friendship
 from model.Friendship import TypeStatus
 from model.schema import FriendRequest, FriendResponse

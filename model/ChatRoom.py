@@ -1,10 +1,7 @@
 import datetime as datetime
 import uuid
-from email.policy import default
-
 from sqlalchemy import String, Column, DateTime, Boolean
 from sqlalchemy.orm import relationship
-
 from dbconfig.config import Base
 
 

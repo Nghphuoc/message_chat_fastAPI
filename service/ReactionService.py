@@ -1,7 +1,5 @@
 from typing import List
-
 from fastapi import HTTPException
-
 from model import Reaction
 from model.schema import ReactionRequest, ReactionResponse
 from repository import ReactionRepository

@@ -1,7 +1,6 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
-
 from controller.AuthController import is_admin
 from depends.dependecy import user_service
 from model.schema import UserRequest, UserResponse

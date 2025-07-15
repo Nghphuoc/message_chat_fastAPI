@@ -1,5 +1,4 @@
 from fastapi import HTTPException
-
 from model import ChatRoom
 from model.schema import ChatRoomRequest, ChatRoomResponse
 from repository import RoomRepository

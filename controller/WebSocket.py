@@ -2,26 +2,18 @@ import datetime
 import json
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
 import asyncio
-
 from starlette.websockets import WebSocketState
-
-from model.schema import MessageRequest, UserResponse, UserInRoomResponse, ReactionRequest
 from redis_client.redis_manager import RedisPubSub
-from depends.dependecy import user_status_service, message_service, user_service, user_room_service, reaction_service, \
-    room_service
+from depends.dependecy import user_status_service, message_service, user_service, user_room_service, reaction_service, room_service
 from service import StatusService, MessageService, UserRoomService, ReactionService, RoomService
 import logging
 from service.webSocketService import WebsocketService
-
 from service.MessageService import to_vietnam_time
 from service.UserService import UserService
 
 logger = logging.getLogger(__name__)
-
 ws_router = APIRouter(prefix="/api/ws", tags=["User"])
-
 redis = RedisPubSub()
-
 # { room_id: set of websockets }
 connected_clients = {}
 # { user_id: websocket }
