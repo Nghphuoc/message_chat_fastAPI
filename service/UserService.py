@@ -193,6 +193,9 @@ class UserService:
     @:return Users
     """
     def _build_user_data(self, user: UserRequest, role_id: str) -> Users:
+        if user.img_url is None or user.img_url.strip() == "":
+            user.img_url = "https://res.cloudinary.com/drvwiefd2/image/upload/v1752567146/453178253_471506465671661_2781666950760530985_n_y8b60j.png"
+
         password_hash = encoder.hash(user.password)
         return Users(
             username=user.username,
