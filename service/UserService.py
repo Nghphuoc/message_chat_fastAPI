@@ -236,7 +236,7 @@ class UserService:
         self.check_duplicate_phone(user.phone)
         if self.db.get_user_by_email(user.email):
             print("EMAIL ALREADY IN TABLE TB_USERS")
-            raise Exception("EMAIL ALREADY IN TABLE TB_USERS")
+            raise Exception("Email already exists")
 
 
     """
@@ -246,4 +246,4 @@ class UserService:
     def check_duplicate_phone(self, phone: str):
         if self.db.get_user_by_phone(phone):
             print("Error PHONE ALREADY IN TABLE TB_USERS")
-            raise Exception("Error PHONE ALREADY IN TABLE TB_USERS")
+            raise Exception("Error Phone already exists")
