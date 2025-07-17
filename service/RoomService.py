@@ -1,4 +1,6 @@
 from fastapi import HTTPException
+from sqlalchemy import Boolean
+
 from model import ChatRoom
 from model.schema import ChatRoomRequest, ChatRoomResponse
 from repository import RoomRepository

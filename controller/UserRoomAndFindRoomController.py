@@ -20,11 +20,14 @@ async def get_all_room_of_user(user_id: str,
     try:
         room_ids = service_user_room.get_all_list_room_for_user(user_id)  # List of (room_id)
         result = []
-        name =""
         for room_tuple in room_ids:
             room_id = room_tuple[0]
             user_rooms = service_user_room.get_user_id_by_room_id(room_id)
-
+            # hidden room check action jot show
+            my_user_room = next((ur for ur in user_rooms if str(ur.user_id) == str(user_id)), None)
+            if not my_user_room or not my_user_room.is_active:
+                continue  # bản thân mot active thì bỏ qua room này
+            # get room of user ( just one get at != user)
             for user_room in user_rooms:
                 if str(user_room.user_id) != str(user_id):
                     user_info = user_service.get_user_by_id(user_room.user_id)
@@ -35,22 +38,17 @@ async def get_all_room_of_user(user_id: str,
                     # check if none ( default )
                     room = service_room.get_room(user_room.room_id)
 
-                    if user_info.display_name:
-                        name = user_info.display_name
-                    else:
-                        name = user_info.username
-
                     if user_info:  # đảm bảo tồn tại
                         result.append(UserInRoomResponse(
                             user_id=user_info.user_id,
                             img_url=user_info.img_url,
-                            username=name,
+                            username= user_info.display_name or user_info.username,
                             room_id=user_room.room_id,
                             status=status_user.is_online,
                             last_seen=to_vietnam_time(status_user.last_seen),
                             action= room.action,
                             time_change= room.time_change
-                        ))
+                            ))
         result.sort(key=lambda x: x.time_change, reverse=True)
         return result
 

@@ -1,4 +1,6 @@
 from fastapi import HTTPException
+from sqlalchemy import Boolean
+
 from model import UserRoom
 from model.schema import UserRoomResponse
 from repository import UserRoomRepository
@@ -105,4 +107,20 @@ class UserRoomService:
             return True
         except Exception as e:
             print("ERROR DELETE USER ROOM BY ID SERVICE: ", str(e))
+            raise HTTPException(status_code=404, detail={"message": e})
+
+    """
+    update action check hidden or show room for user
+    @param room_id: str
+    @param user_id: str
+    @param action_check: bool
+    @return: bool
+    """
+    def update_action(self, room_id: str, user_id: str, action_check: bool) -> bool:
+        try:
+            print("UPDATE USER ROOM BY ID SERVICE")
+            self.db.check_is_active(room_id, user_id, action_check)
+            return True
+        except Exception as e:
+            print("ERROR UPDATE USER ROOM BY ID SERVICE: ", str(e))
             raise HTTPException(status_code=404, detail={"message": e})

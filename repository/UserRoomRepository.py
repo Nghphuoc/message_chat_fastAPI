@@ -1,5 +1,7 @@
-from sqlalchemy import desc
+from sqlalchemy import desc, Boolean, update
 from sqlalchemy.orm import Session
+from sqlalchemy.testing import db
+
 from model import UserRoom
 
 
@@ -66,3 +68,14 @@ class UserRoomRepository:
             self.db.rollback()
             raise Exception("Error while deleting user room: " + str(e))
 
+
+    def check_is_active(self, room_id: str, user_id: str, action_check: bool)-> bool:
+        try:
+            (self.db.query(UserRoom).filter(UserRoom.room_id == room_id)
+             .filter(UserRoom.user_id == user_id).update({UserRoom.is_active: action_check}))
+            self.db.commit()
+            return True
+        except Exception as e:
+            print("Error while checking if user room is active: " + str(e))
+            self.db.rollback()
+            raise Exception(str(e))

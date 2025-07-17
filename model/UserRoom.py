@@ -1,6 +1,6 @@
 import datetime as datetime
 import uuid
-from sqlalchemy import Column, String, ForeignKey, DateTime
+from sqlalchemy import Column, String, ForeignKey, DateTime, Boolean
 from dbconfig.config import Base
 
 
@@ -11,3 +11,4 @@ class UserRoom(Base):
     user_id = Column(String(36), ForeignKey("TB_USERS.user_id"))
     room_id = Column(String(36), ForeignKey("TB_CHAT_ROOMS.chat_room_id"))
     joined_at = Column(DateTime, default = datetime.datetime.now())
+    is_active = Column(Boolean, default=True)
