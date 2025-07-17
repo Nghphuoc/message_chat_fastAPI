@@ -1,7 +1,6 @@
 import datetime
 import uuid
 import enum
-
 from sqlalchemy import String, Column, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from dbconfig.config import Base
@@ -13,8 +12,7 @@ class TypeStatus(str, enum.Enum):
     WAIT = "WAIT"
     ACCEPTED = "ACCEPTED"
     BLOCKED = "BLOCKED"
-    NONE = "NONE"  # 👈 thêm dòng này
-
+    NONE = "NONE"
 
 class Friendship(Base):
     __tablename__ = 'TB_FRIENDSHIPS'
