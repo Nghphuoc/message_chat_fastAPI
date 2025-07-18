@@ -96,6 +96,7 @@ class MessageRequest(BaseModel):
     content: str
     file_url: Optional[str]
     created_at: Optional[datetime]
+    reply_to_message_id: Optional[str]
     room: str
     user: str
 
@@ -104,10 +105,13 @@ class MessageResponse(BaseModel):
     content: str
     file_url: Optional[str]
     created_at: Optional[datetime]
+    reply_to_message_id: Optional[str]
+    reply_to: Optional['MessageResponse']
     room: ChatRoomResponse
     user: UserResponse
     class Config:
         orm_mode = True  # Dành cho Pydantic v1
+MessageResponse.update_forward_refs()
 
 #Friend
 class FriendRequest(BaseModel):
@@ -169,6 +173,7 @@ class UserInRoomResponse(BaseModel):
     last_seen: Optional[datetime]
     action: Optional[str]
     time_change: Optional[datetime]
+    unread: bool
     class Config:
         orm_mode = True
 

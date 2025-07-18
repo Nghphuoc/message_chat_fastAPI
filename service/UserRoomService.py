@@ -124,3 +124,19 @@ class UserRoomService:
         except Exception as e:
             print("ERROR UPDATE USER ROOM BY ID SERVICE: ", str(e))
             raise HTTPException(status_code=404, detail={"message": e})
+
+
+    """
+    update last_read_at check unread message user
+    @param room_id: str
+    @param user_id: str
+    @return: bool
+    """
+    def update_last_read_at(self, room_id: str, user_id: str) -> bool:
+        try:
+            print("UPDATE LAST READ FOR USER ROOM")
+            self.db.update_last_read(room_id, user_id)
+            return True
+        except Exception as e:
+            print("ERROR UPDATE LAST READ FOR USER ROOM: ", str(e))
+            raise HTTPException(status_code=404, detail={"message": e})

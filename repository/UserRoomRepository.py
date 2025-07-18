@@ -1,3 +1,5 @@
+import datetime
+
 from sqlalchemy import desc, Boolean, update
 from sqlalchemy.orm import Session
 from sqlalchemy.testing import db
@@ -77,5 +79,16 @@ class UserRoomRepository:
             return True
         except Exception as e:
             print("Error while checking if user room is active: " + str(e))
+            self.db.rollback()
+            raise Exception(str(e))
+
+
+    def update_last_read(self, room_id: str, user_id: str):
+        try:
+            (self.db.query(UserRoom).filter(UserRoom.room_id == room_id)
+             .filter(UserRoom.user_id == user_id)).update({UserRoom.last_read_at: datetime.datetime.now()})
+            self.db.commit()
+        except Exception as e:
+            print("Error while updating last read: " + str(e))
             self.db.rollback()
             raise Exception(str(e))

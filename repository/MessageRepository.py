@@ -1,3 +1,5 @@
+import datetime
+
 from sqlalchemy import desc, asc
 from sqlalchemy.orm import Session
 from model import Message
@@ -58,3 +60,17 @@ class MessageRepository:
         except Exception as e:
             self.db.rollback()
             raise Exception("ERROR DELETE MESSAGE", str(e))
+
+
+    def count_unread_messages(self, last_read: datetime, room_id: str) -> int:
+        try:
+            count = (
+                self.db.query(Message)
+                .filter(Message.room_id == room_id)
+                .filter(Message.created_at > last_read)
+                .count()
+            )
+            return count
+        except Exception as e:
+            print("ERROR COUNT UNREAD MESSAGE", str(e))
+            raise Exception(str(e))

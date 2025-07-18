@@ -47,7 +47,8 @@ async def get_all_room_of_user(user_id: str,
                             status=status_user.is_online,
                             last_seen=to_vietnam_time(status_user.last_seen),
                             action= room.action,
-                            time_change= room.time_change
+                            time_change= room.time_change,
+                            unread= True
                             ))
         result.sort(key=lambda x: x.time_change, reverse=True)
         return result

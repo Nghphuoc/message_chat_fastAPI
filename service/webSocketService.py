@@ -41,7 +41,8 @@ class WebsocketService:
         room=room_id,
         content=data["content"],
         file_url=data.get("file_url", ""),  # optional
-        created_at=datetime.datetime.utcnow())
+        created_at=datetime.datetime.utcnow(),
+        reply_to_message_id=data.get("reply", None),)
         try:
             # step 1: insert data message
             message_data = service_message.insert_message(data_send)
@@ -69,7 +70,14 @@ class WebsocketService:
             "img_url": data_user.img_url,
             "room_id": room_id,
             "content": data_send.content,
-            "created_at": str(to_vietnam_time(data_send.created_at).isoformat())}
+            "created_at": str(to_vietnam_time(data_send.created_at).isoformat()),
+            "reply": {
+                "message_id": message_data.reply_to.message_id,
+                "user_id": message_data.reply_to.user.user_id,
+                "name_user": message_data.reply_to.user.username,
+                "content": message_data.reply_to.content,
+            } if message_data.reply_to_message_id else None
+            }
         }
         # step 3: send content
         action = f"{name_user}: {data_send.content}"

@@ -31,6 +31,7 @@ class MessageService:
                 created_at=message.created_at,
                 room_id=message.room,
                 user_id=message.user,
+                reply_to_message_id=message.reply_to_message_id or None,
             )
             data_message = self.db.create_message(message_data)
             return MessageResponse.from_orm(data_message)
@@ -84,6 +85,12 @@ class MessageService:
                     "content": content,
                     "created_at": created_at,
                     "icon": reaction,
+                    "reply": {
+                        "message_id": message_data.reply_to.message_id,
+                        "user_id": message_data.reply_to.user.user_id,
+                        "name_user": message_data.reply_to.user.username,
+                        "content": message_data.reply_to.content,
+                    } if message_data.reply_to else None
                 }
                 result.append(message_dict)
 
