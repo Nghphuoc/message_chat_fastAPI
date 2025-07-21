@@ -71,7 +71,7 @@ class MessageService:
                 reaction = self.reaction.get_reaction_by_message_id(message_data.message_id)
 
                 user_id = message_data.user.user_id
-                name_user = message_data.user.username
+                name_user = message_data.user.display_name
                 img_url = message_data.user.img_url  # or message_data.user.img_url depending on your model
                 content = message_data.content
                 created_at = str(to_vietnam_time(message_data.created_at))
@@ -88,7 +88,7 @@ class MessageService:
                     "reply": {
                         "message_id": message_data.reply_to.message_id,
                         "user_id": message_data.reply_to.user.user_id,
-                        "name_user": message_data.reply_to.user.username,
+                        "name_user": message_data.reply_to.user.display_name,
                         "content": message_data.reply_to.content,
                     } if message_data.reply_to else None
                 }
