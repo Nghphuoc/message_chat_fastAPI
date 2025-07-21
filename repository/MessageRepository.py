@@ -32,9 +32,8 @@ class MessageRepository:
             raise Exception("ERROR GET MESSAGE", str(e))
 
 
-    def get_message_from_room_id(self, room_id: str):
+    def get_message_from_room_id(self, skip: int, room_id: str):
         try:
-            skip: int = 0
             limit: int = 20
             messages = (
                 self.db.query(Message)
