@@ -59,8 +59,9 @@ class MessageService:
     @:param room_id : str
     @:return: dict
     """
-    def get_all_message_from_room(self,skip: int, room_id: str) -> list[dict]:
+    def get_all_message_from_room(self, room_id: str) -> list[dict]:
         try:
+            skip = 0
             print("GET ALL MESSAGE FROM ROOM AT MessageService")
             data_messages = self.db.get_message_from_room_id(skip, room_id)  # Assume this returns ORM objects or dict-like
 

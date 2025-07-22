@@ -34,7 +34,7 @@ class MessageRepository:
 
     def get_message_from_room_id(self, skip: int, room_id: str):
         try:
-            limit: int = 20
+            limit: int = 30
             messages = (
                 self.db.query(Message)
                 .filter(Message.room_id == room_id)
