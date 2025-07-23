@@ -57,27 +57,6 @@ class UserAndFriendCreateService:
                 raise HTTPException(status_code=500,
                                     detail={"message": e})
 
-            try:
-                room_data = ChatRoom(name="default",
-                                     is_group=False,
-                                     created_by=user_id, )
-                # call create room chat
-                print("CREATE CHAT ROOM AT UserAndFriendCreateService")
-                data_room = self.chat_room.insert_room(room_data)
-            except Exception as e:
-                print("ERROR CREATE CHAT ROOM AT UserAndFriendCreateService: " + str(e))
-                raise HTTPException(status_code=500,
-                                    detail={"message": e})
-
-            try:
-                # call user room service
-                print("CREATE USER ROOM AT UserAndFriendCreateService")
-                self.user_room.create_user_room(user_id, friend_id, data_room.chat_room_id)
-            except Exception as e:
-                print("ERROR CREATE USER ROOM AT UserAndFriendCreateService: " + str(e))
-                raise HTTPException(status_code=500,
-                                    detail={"message": e})
-
 
     """
     update status just use for accept friend
@@ -89,6 +68,24 @@ class UserAndFriendCreateService:
         try:
             print("UPDATE STATUS FRIEND AT UserAndFriendCreateService")
             self.friend.update_relationship_status(user_id, friend_id, status.status)
+
+            try:
+                room_data = ChatRoom(name="default",
+                                     is_group=False,
+                                     created_by=user_id)
+                print("CREATE CHAT ROOM AT UserAndFriendCreateService")
+                data_room = self.chat_room.insert_room(room_data)
+            except Exception as e:
+                print("ERROR CREATE CHAT ROOM AT UserAndFriendCreateService: " + str(e))
+                raise HTTPException(status_code=500,
+                                    detail={"message": e})
+            try:
+                print("CREATE USER ROOM AT UserAndFriendCreateService")
+                self.user_room.create_user_room(user_id, friend_id, data_room.chat_room_id)
+            except Exception as e:
+                print("ERROR CREATE USER ROOM AT UserAndFriendCreateService: " + str(e))
+                raise HTTPException(status_code=500,
+                                    detail={"message": e})
         except Exception as e:
             print("ERROR UPDATE FRIEND AT UserAndFriendCreateService: " + str(e))
             raise HTTPException(status_code=400, detail={"message": e})
@@ -119,13 +116,13 @@ class UserAndFriendCreateService:
     def update_friend_request(self, data_user: Friendship, data_friend: Friendship):
         try:
             print("UPDATE FRIEND REQUEST CANCEL AT UserAndFriendCreateService")
-            if data_user is not None:
-                data_user.status = TypeStatus.WAIT
-                self.friend.update_status_request_again_status(data_user)
-
-            if data_friend is not None:
+            if data_user is None or data_friend is None:
+                raise HTTPException(status_code=400,detail={"message": "Data User or Data Friend is None"})
+            else:
                 data_friend.status = TypeStatus.PENDING
                 self.friend.update_status_request_again_status(data_friend)
+                data_user.status = TypeStatus.WAIT
+                self.friend.update_status_request_again_status(data_user)
 
         except Exception as e:
             print("ERROR UPDATE FRIEND REQUEST CANCEL AT UserAndFriendCreateService: " + str(e))
