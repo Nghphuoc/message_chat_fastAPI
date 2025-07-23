@@ -1,4 +1,5 @@
-import aioredis
+import redis.asyncio as redis
+
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -11,7 +12,7 @@ class RedisPubSub:
 
 
     async def connect(self):
-        self.redis = await aioredis.from_url(os.getenv("REDIS_URL"), decode_responses=True)  #
+        self.redis = await redis.from_url(os.getenv("REDIS_URL"), decode_responses=True)  #
 
 
     async def subscribe(self, channel: str):
