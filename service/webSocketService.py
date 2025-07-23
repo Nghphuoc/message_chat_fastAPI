@@ -57,9 +57,9 @@ class WebsocketService:
         # step 2: call cache get data user
         data_user = await self.get_user_info(user_id, service_user)
         if data_user.display_name is None:
-            name_user = data_user.display_name
-        else:
             name_user = data_user.username
+        else:
+            name_user = data_user.display_name
 
         message_send = {
             "type": "message",
