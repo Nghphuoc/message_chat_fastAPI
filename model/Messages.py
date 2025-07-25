@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 import uuid
-from sqlalchemy import Column, String, Text, DateTime, ForeignKey
-from sqlalchemy.dialects.oracle import NUMBER
+from sqlalchemy import Column, String, Text, DateTime, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 from dbconfig.config import Base
 
@@ -13,7 +12,7 @@ class Message(Base):
     content = Column(Text)
     file_url = Column(Text)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable = False)
-    is_deleted = Column(NUMBER, default = 0)
+    is_deleted = Column(Integer , default = 0)
     # Reply
     reply_to_message_id = Column(String(36), ForeignKey('TB_MESSAGES.message_id'), nullable=True)
     reply_to = relationship("Message", remote_side=[message_id], backref="replies")
