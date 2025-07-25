@@ -42,6 +42,7 @@ class WebsocketService:
         content=data["content"],
         file_url=data.get("file_url", ""),  # optional
         created_at=datetime.datetime.utcnow(),
+        is_deleted=0,
         reply_to_message_id=data.get("reply", None),)
         try:
             # step 1: insert data message
@@ -73,6 +74,7 @@ class WebsocketService:
             "created_at": str(to_vietnam_time(data_send.created_at).isoformat()),
             "reply": {
                 "message_id": message_data.reply_to.message_id,
+                "is_deleted": message_data.reply_to.is_deleted,
                 "user_id": message_data.reply_to.user.user_id,
                 "name_user": message_data.reply_to.user.display_name,
                 "content": message_data.reply_to.content,
