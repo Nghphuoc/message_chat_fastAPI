@@ -1,8 +1,6 @@
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, constr, EmailStr
-
-from model import UserStatus
 from model.Friendship import TypeStatus
 from model.Role import RoleType
 from model.User import TypeFlag
@@ -97,6 +95,7 @@ class MessageRequest(BaseModel):
     file_url: Optional[str]
     created_at: Optional[datetime]
     reply_to_message_id: Optional[str]
+    is_deleted: Optional[int]
     room: str
     user: str
 
@@ -105,6 +104,7 @@ class MessageResponse(BaseModel):
     content: str
     file_url: Optional[str]
     created_at: Optional[datetime]
+    is_deleted: Optional[int]
     reply_to_message_id: Optional[str]
     reply_to: Optional['MessageResponse']
     room: ChatRoomResponse
