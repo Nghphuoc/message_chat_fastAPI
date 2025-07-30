@@ -70,6 +70,7 @@ class WebsocketService:
             "name_user": name_user,
             "img_url": data_user.img_url,
             "room_id": room_id,
+            "is_deleted": message_data.is_deleted,
             "content": data_send.content,
             "created_at": str(to_vietnam_time(data_send.created_at).isoformat()),
             "reply": {
@@ -158,3 +159,56 @@ class WebsocketService:
                 }
             }
             return error_payload
+
+    """
+    update field is_deleted = 1
+    @:param data : dict
+    @:param service_user : UserService
+    @:param service_room: RoomService
+    @return: dict
+    """
+    async def is_deleted(self, data, user_id, room_id, service_message: MessageService,
+                           service_user: UserService, service_room: RoomService):
+        try:
+            data_message = service_message.update_is_deleted(data["message_id"])
+        except Exception as e:
+            error_payload = {
+                "type": "error",
+                "data": {
+                    "message": f"Lỗi xóa message: {str(e)}"
+                }
+            }
+            return error_payload
+
+        # step 2: call cache get data user
+        data_user = await self.get_user_info(user_id, service_user)
+        if data_user.display_name is None:
+            name_user = data_user.username
+        else:
+            name_user = data_user.display_name
+
+        message_send = {
+            "type": "delete_message",
+            "data": {
+                "message_id": data_message.message_id,
+                "user_id": user_id,
+                "name_user": name_user,
+                "img_url": data_user.img_url,
+                "room_id": room_id,
+                "is_deleted": data_message.is_deleted,
+                "content": data_message.content,
+                "created_at": str(to_vietnam_time(data_message.created_at).isoformat()),
+                "reply": {
+                    "message_id": data_message.reply_to.message_id,
+                    "is_deleted": data_message.reply_to.is_deleted,
+                    "user_id": data_message.reply_to.user.user_id,
+                    "name_user": data_message.reply_to.user.display_name,
+                    "content": data_message.reply_to.content,
+                } if data_message.reply_to_message_id else None
+            }
+        }
+        # step 3: send content
+        action = f"{name_user}: was deleted message"
+        service_room.update_action_room(room_id, action)
+
+        return message_send

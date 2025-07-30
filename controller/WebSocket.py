@@ -163,6 +163,20 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, user_id: str,
                         }
                         await websocket.send_text(json.dumps(error_payload))
 
+                elif type == "delete_message":
+                    try:
+                        delete_message = await ws_service.is_deleted(data, user_id, room_id, service_message, service_user, service_room)
+                        await redis.publish(room_id, json.dumps(delete_message))
+                    except Exception as e:
+                        print("ERROR DELETE MESSAGE AT MessageService: ", e)
+                        error_payload = {
+                            "type": "error",
+                            "data": {
+                                "message": {str(e)}
+                            }
+                        }
+                        await websocket.send_text(json.dumps(error_payload))
+
         except WebSocketDisconnect:
             pass
         finally:
