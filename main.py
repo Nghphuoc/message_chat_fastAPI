@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from controller.RoleController import router as role_router
 from controller.UserController import router as user_router
 from starlette.middleware.cors import CORSMiddleware
-from dbconfig.config import Base, engine
+from dbconfig.config import Base, engine, SessionLocal
 from controller.WebSocket import redis  # chỉ import redis_client
 from controller.WebSocket import ws_router
 from controller.RoomController import router as room_router
@@ -13,6 +13,7 @@ from controller.MessageController import router as message_router
 from controller.UserRoomAndFindRoomController import router as user_room_and_find_room
 from controller.ReactionController import router as reaction_router
 from controller.AuthController import router as auth_router
+from dbconfig.setup import check_create_role
 from model.Reaction import Reaction
 from model.ChatRoom import ChatRoom
 from model.Friendship import Friendship
@@ -52,6 +53,11 @@ app.include_router(auth_router)
 @app.on_event("startup")
 async def on_startup():
     Base.metadata.create_all(bind=engine)
+    db = SessionLocal()
+    try:
+        check_create_role(db)
+    finally:
+        db.close()
     await redis.connect()
     print("Creating tables...")
     print("Tables created.")
