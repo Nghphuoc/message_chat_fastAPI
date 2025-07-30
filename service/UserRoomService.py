@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import HTTPException
 from sqlalchemy import Boolean
 
@@ -28,10 +30,12 @@ class UserRoomService:
             new_user_room = UserRoom(
                 user_id=user_id,
                 room_id=user_room_id,
+                last_read_at=datetime.now(),
             )
             friend_user_room = UserRoom(
                 user_id=friend_id,
                 room_id=user_room_id,
+                last_read_at=datetime.now(),
             )
             self.db.create_user_room(new_user_room)
             self.db.create_user_room(friend_user_room)
