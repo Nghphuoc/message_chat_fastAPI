@@ -73,3 +73,15 @@ class MessageRepository:
         except Exception as e:
             print("ERROR COUNT UNREAD MESSAGE", str(e))
             raise Exception(str(e))
+
+
+    def update_is_deleted(self, message_id: str):
+        try:
+            (self.db.query(Message).filter(Message.message_id == message_id)
+                       .update({Message.is_deleted: 1}))
+            self.db.commit()
+            message = self.db.query(Message).filter(Message.message_id == message_id).first()
+            return message
+        except Exception as e:
+            self.db.rollback()
+            raise Exception("ERROR UPDATE MESSAGE", str(e))

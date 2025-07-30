@@ -31,6 +31,7 @@ class MessageService:
                 created_at=message.created_at,
                 room_id=message.room,
                 user_id=message.user,
+                is_deleted=message.is_deleted,
                 reply_to_message_id=message.reply_to_message_id or None,
             )
             data_message = self.db.create_message(message_data)
@@ -85,9 +86,11 @@ class MessageService:
                     "room_id": room_id,
                     "content": content,
                     "created_at": created_at,
+                    "is_deleted": message_data.is_deleted,
                     "icon": reaction,
                     "reply": {
                         "message_id": message_data.reply_to.message_id,
+                        "is_deleted": message_data.reply_to.is_deleted,
                         "user_id": message_data.reply_to.user.user_id,
                         "name_user": message_data.reply_to.user.display_name,
                         "content": message_data.reply_to.content,
@@ -101,7 +104,10 @@ class MessageService:
             print("ERROR GET ALL MESSAGE FROM ROOM AT MessageService: " + str(e))
             raise HTTPException(status_code=500, detail="ERROR ALL MESSAGE FROM ROOM AT MessageService: " + str(e))
 
-
+    """
+    @param message_id : str
+    @return: 
+    """
     def delete_message(self, message_id: str):
         try:
             print("DELETE MESSAGE AT MessageService")
@@ -110,6 +116,18 @@ class MessageService:
             print("ERROR DELETE MESSAGE AT MessageService: " + str(e))
             raise HTTPException(status_code=500, detail="message: " + str(e))
 
+    """
+    @param message_id : str
+    @return: 
+    """
+    def update_is_deleted(self, message_id: str)-> MessageResponse:
+        try:
+            print("UPDATE MESSAGE IS_DELETED AT MessageService")
+            message = self.db.update_is_deleted(message_id)
+            return MessageResponse.from_orm(message)
+        except Exception as e:
+            print("ERROR UPDATE MESSAGE AT MessageService: " + str(e))
+            raise HTTPException(status_code=500, detail="message: " + str(e))
 
 """
 parse time global to vietnam_time GMT +7
