@@ -23,7 +23,7 @@ engine = create_engine(
     pool_pre_ping=True
 )
 
-SessionLocal = sessionmaker(bind=engine)
+SessionLocal = sessionmaker(bind=engine,checkfirst=True)
 
 Base = declarative_base()
 
