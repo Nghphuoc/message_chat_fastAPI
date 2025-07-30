@@ -53,11 +53,6 @@ app.include_router(auth_router)
 @app.on_event("startup")
 async def on_startup():
     Base.metadata.create_all(bind=engine)
-    db = SessionLocal()
-    try:
-        check_create_role(db)
-    finally:
-        db.close()
     await redis.connect()
     print("Creating tables...")
     print("Tables created.")
