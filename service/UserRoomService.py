@@ -22,7 +22,7 @@ class UserRoomService:
     @param friend_id : str
     @param user_room_id : str
     """
-    def create_user_room(self, user_id: str, friend_id: str, user_room_id: str) -> UserRoomResponse:
+    def create_user_room(self, user_id: str, friend_id: str, user_room_id: str) -> str:
         try:
             print("CREATE USER ROOM AT ROOM SERVICE")
             new_user_room = UserRoom(
@@ -35,7 +35,7 @@ class UserRoomService:
             )
             self.db.create_user_room(new_user_room)
             self.db.create_user_room(friend_user_room)
-            return friend_user_room
+            return friend_user_room.room_id
         except Exception as e:
             print("ERROR CREATE USER_ROOM AT USER ROOM SERVICE: ", str(e))
             raise HTTPException(status_code=404, detail={"message": e})

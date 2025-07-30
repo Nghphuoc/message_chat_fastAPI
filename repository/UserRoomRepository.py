@@ -22,7 +22,6 @@ class UserRoomRepository:
             return user_room
         except Exception as e:
             self.db.rollback()
-            self.db.refresh(user_room)
             raise Exception("Error while creating user room: " + str(e))
 
 
